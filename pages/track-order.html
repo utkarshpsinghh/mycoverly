@@ -1,1 +1,455 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Track Order — Coverly</title><link rel="stylesheet" href="page.css"><style>.production-track{display:grid;gap:0;margin-top:22px}.production-track div{position:relative;padding:0 0 20px 30px;font-size:12px;color:#738078}.production-track div:before{content:'';position:absolute;left:7px;top:2px;width:12px;height:12px;border-radius:50%;background:#dfe6dd}.production-track div:after{content:'';position:absolute;left:12px;top:14px;width:2px;height:100%;background:#dfe6dd}.production-track div:last-child:after{display:none}.production-track .active{color:#17261f;font-weight:800}.production-track .active:before{background:#d7ff64;box-shadow:0 0 0 4px #eaf6c6}</style></head><body><div class="bar">ORDER TRACKING</div><nav class="nav"><a class="logo" href="../index.html">COVER<i>LY</i></a><div class="nav-links"><a href="../index.html#shop">Shop</a><a href="contact.html">Contact</a></div></nav><main class="wrap"><p class="kicker">Track order</p><h1>Where is my order?</h1><p class="intro">Enter both details from your order confirmation to view its status.</p><form class="card" id="track"><label>Order ID<input name="id" required placeholder="CVR-XXXXXX"></label><label>Mobile number<input name="phone" required inputmode="numeric" placeholder="10-digit mobile number"></label><button class="bag">TRACK ORDER</button></form><div id="result" class="content"></div></main><footer class="footer"><a class="logo" href="../index.html">COVER<i>LY</i></a><p><a href="faq.html">FAQ</a> · <a href="contact.html">Contact</a></p></footer><script>track.onsubmit=e=>{e.preventDefault();let d=new FormData(track),o=(JSON.parse(localStorage.getItem('coverlyOrders')||'[]')).find(x=>x.orderId.toLowerCase()===d.get('id').trim().toLowerCase()&&x.phone===d.get('phone').replace(/\D/g,'')),steps=['Order Placed','Payment Verified','Design Review','Design Preparation','Case Production','Quality Check','Shipped','Out for Delivery','Delivered'],active=o?Math.max(0,steps.findIndex(x=>x.toLowerCase()===String(o.orderStatus).toLowerCase())):-1;result.innerHTML=o?`<h2>${o.orderId}</h2><p><b>${o.orderStatus}</b> · ${o.paymentStatus}</p><div class="production-track">${steps.map((step,i)=>`<div class="${i<=active?'active':''}">${step}</div>`).join('')}</div>`:'<p>We couldn’t find an order matching both details. Please check them or contact support.</p>'}</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Track Order — Coverly</title>
+  <link rel="stylesheet" href="page.css">
+  <style>
+    .track-form {
+      display: grid;
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .track-form label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .track-form input {
+      display: block;
+      width: 100%;
+      margin-top: 6px;
+      padding: 14px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    .track-form input:focus {
+      border-color: #9a72c5;
+      box-shadow: 0 0 0 3px #eadfff;
+    }
+    .track-btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--ink);
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: opacity .2s;
+    }
+    .track-btn:hover {
+      opacity: 0.92;
+    }
+    .track-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .track-result {
+      margin-top: 36px;
+    }
+    .order-header-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .order-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .order-id-badge {
+      font-family: 'DM Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0;
+    }
+    .order-date {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .status-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .badge-pill {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: 'DM Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .badge-status {
+      background: #eadfff;
+      color: #5c3c88;
+    }
+    .badge-payment {
+      background: #e4f4dc;
+      color: #2f6920;
+    }
+    .order-details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+    }
+    .order-details-grid div b {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .courier-banner {
+      background: #fdf5e8;
+      border: 1px solid #f9e2b8;
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .courier-banner strong {
+      display: block;
+      font-size: 14px;
+      color: #7a4f10;
+    }
+    .courier-banner a {
+      background: #7a4f10;
+      color: #fff !important;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .production-track {
+      display: grid;
+      gap: 0;
+      margin-top: 24px;
+      padding-left: 6px;
+    }
+    .production-track .track-step {
+      position: relative;
+      padding: 0 0 24px 34px;
+      font-size: 13px;
+      color: #8c8599;
+    }
+    .production-track .track-step:before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 3px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #e0d8ea;
+      transition: background .2s;
+    }
+    .production-track .track-step:after {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 17px;
+      width: 2px;
+      height: calc(100% - 12px);
+      background: #e9e2f2;
+    }
+    .production-track .track-step:last-child {
+      padding-bottom: 0;
+    }
+    .production-track .track-step:last-child:after {
+      display: none;
+    }
+    .production-track .track-step.done {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .production-track .track-step.done:before {
+      background: #9a72c5;
+    }
+    .production-track .track-step.active {
+      color: var(--ink);
+      font-weight: 800;
+    }
+    .production-track .track-step.active:before {
+      background: #29233f;
+      box-shadow: 0 0 0 5px #ffc9df;
+    }
+    .loading-box {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #e9dfee;
+      border-top-color: #6b5a99;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .support-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .support-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+    @media(max-width:650px) {
+      .order-details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script src="../config.js"></script>
+  <script src="../google-sheets-config.js"></script>
+</head>
+<body>
+  <div class="bar">ORDER TRACKING & DISPATCH UPDATES</div>
+  <nav class="nav">
+    <a class="logo" href="../index.html">COVER<i>LY</i></a>
+    <div class="nav-links">
+      <a href="../index.html#shop">Shop cases</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <p class="kicker">Track order</p>
+    <h1>Where is my case?</h1>
+    <p class="intro">Enter your Order ID and 10-digit mobile number to see real-time production, quality check, and courier tracking details.</p>
+
+    <div class="card">
+      <form class="track-form" id="trackForm">
+        <label>
+          Order ID
+          <input name="id" id="trackOrderId" required placeholder="e.g. CVR-M1A2B3" autocomplete="off">
+        </label>
+        <label>
+          Mobile Number
+          <input name="phone" id="trackPhone" required inputmode="numeric" pattern="[0-9]{10}" placeholder="10-digit mobile number used at checkout" autocomplete="tel">
+        </label>
+        <button class="track-btn" id="trackSubmitBtn" type="submit">CHECK ORDER STATUS →</button>
+      </form>
+    </div>
+
+    <div id="trackResult" class="track-result"></div>
+  </main>
+
+  <footer class="footer">
+    <a class="logo" href="../index.html">COVER<i>LY</i></a>
+    <p><a href="faq.html">FAQ</a> · <a href="contact.html">Contact Support</a> · <a href="shipping.html">Shipping Policy</a></p>
+  </footer>
+
+  <script>
+    const STEPS = [
+      'Order Placed',
+      'Payment Verified',
+      'Design Review',
+      'Case Production',
+      'Quality Check',
+      'Shipped',
+      'Delivered'
+    ];
+
+    function getActiveStepIndex(status) {
+      if (!status) return 0;
+      const s = String(status).toLowerCase().trim();
+      if (s.includes('deliver')) return 6;
+      if (s.includes('ship') || s.includes('courier') || s.includes('dispatch') || s.includes('transit') || s.includes('out for')) return 5;
+      if (s.includes('quality') || s.includes('check')) return 4;
+      if (s.includes('product') || s.includes('print') || s.includes('making')) return 3;
+      if (s.includes('design') || s.includes('review') || s.includes('prep')) return 2;
+      if (s.includes('verif') || s.includes('paid') || s.includes('received')) return 1;
+      return 0;
+    }
+
+    function renderOrderCard(order, source) {
+      const activeIdx = getActiveStepIndex(order.orderStatus);
+      const itemsText = order.items
+        ? (Array.isArray(order.items)
+            ? order.items.map(i => `${i.designName || i.title || 'Case'} (${i.phoneBrand || ''} ${i.phoneModel || ''}) × ${i.quantity || 1}`).join(', ')
+            : String(order.items))
+        : 'Custom Case';
+
+      const courierHtml = (order.courier || order.trackingUrl)
+        ? `<div class="courier-banner">
+             <div>
+               <strong>Dispatched via ${order.courier || 'Courier Partner'}</strong>
+               <small>Package is in transit to your delivery address.</small>
+             </div>
+             ${order.trackingUrl ? `<a href="${order.trackingUrl}" target="_blank" rel="noopener">Track Courier Package →</a>` : ''}
+           </div>`
+        : '';
+
+      return `
+        <div class="order-header-card">
+          <div class="order-header-top">
+            <div>
+              <h2 class="order-id-badge">${order.orderId}</h2>
+              <div class="order-date">${order.date || order.createdAt ? new Date(order.date || order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Order placed'}</div>
+            </div>
+            <div class="status-badges">
+              <span class="badge-pill badge-status">${order.orderStatus || 'Order Placed'}</span>
+              <span class="badge-pill badge-payment">${order.paymentStatus || 'Payment Verification Pending'}</span>
+            </div>
+          </div>
+
+          <div class="order-details-grid">
+            <div>
+              <b>Customer</b>
+              <span>${order.customerName || (order.customer && order.customer.name) || 'Customer'} · ${order.phone || (order.customer && order.customer.phone) || ''}</span>
+            </div>
+            <div>
+              <b>Total Amount</b>
+              <span>₹${order.total || order.amountPaid || '—'} ${order.paymentMethod ? `(${order.paymentMethod})` : ''}</span>
+            </div>
+            <div style="grid-column: 1/-1">
+              <b>Order Items</b>
+              <span>${itemsText}</span>
+            </div>
+          </div>
+
+          ${courierHtml}
+
+          <div class="production-track">
+            ${STEPS.map((step, i) => {
+              let cls = '';
+              if (i < activeIdx) cls = 'done';
+              else if (i === activeIdx) cls = 'active';
+              return `<div class="track-step ${cls}"><b>${step}</b></div>`;
+            }).join('')}
+          </div>
+
+          <div class="support-actions">
+            <a class="support-btn" href="https://wa.me/918650635775?text=Hello%20Coverly,%20I%20need%20an%20update%20on%20my%20order%20${encodeURIComponent(order.orderId)}" target="_blank">💬 WhatsApp Support</a>
+            <a class="support-btn" href="mailto:support@mycoverly.store?subject=Order%20Update%20${encodeURIComponent(order.orderId)}">✉️ Email Customer Care</a>
+          </div>
+        </div>
+      `;
+    }
+
+    async function searchOrder(id, phone) {
+      const resultEl = document.getElementById('trackResult');
+      const submitBtn = document.getElementById('trackSubmitBtn');
+      const cleanId = id.trim().toUpperCase();
+      const cleanPhone = phone.replace(/\D/g, '');
+
+      resultEl.innerHTML = `
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <b>Checking order records...</b>
+          <p style="margin: 6px 0 0; font-size: 12px; color: var(--muted)">Searching for ${cleanId}</p>
+        </div>
+      `;
+      submitBtn.disabled = true;
+
+      // Check local storage first for quick response
+      let localOrder = null;
+      try {
+        const localOrders = JSON.parse(localStorage.getItem('coverlyOrders') || '[]');
+        localOrder = localOrders.find(x => 
+          String(x.orderId).trim().toUpperCase() === cleanId &&
+          String(x.phone || (x.customer && x.customer.phone) || '').replace(/\D/g, '') === cleanPhone
+        );
+      } catch (_) {}
+
+      // Query Google Apps Script
+      const endpoint = window.coverlyOrderWebhook;
+      let sheetOrder = null;
+      if (endpoint) {
+        try {
+          const resp = await fetch(`${endpoint}?orderId=${encodeURIComponent(cleanId)}&phone=${encodeURIComponent(cleanPhone)}`, {
+            cache: 'no-store'
+          });
+          const data = await resp.json();
+          if (data && data.found && data.orderId) {
+            sheetOrder = data;
+          }
+        } catch (err) {
+          console.warn('Google Sheet lookup failed:', err);
+        }
+      }
+
+      submitBtn.disabled = false;
+
+      const order = sheetOrder || localOrder;
+      if (order) {
+        resultEl.innerHTML = renderOrderCard(order, sheetOrder ? 'sheet' : 'local');
+        resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        resultEl.innerHTML = `
+          <div class="card" style="border-left: 4px solid var(--orange); background: #fffdfd">
+            <h3 style="margin-top:0">Order not found</h3>
+            <p>We couldn't find an order matching ID <b>${cleanId}</b> and phone number <b>${cleanPhone}</b>.</p>
+            <p style="font-size: 12px; color: var(--muted)">
+              • Please ensure the Order ID matches your confirmation (e.g. CVR-XXXXXX).<br>
+              • If you placed your order just a moment ago, please allow 1–2 minutes for Google Sheets to synchronize.
+            </p>
+            <div class="support-actions">
+              <a class="support-btn" href="https://wa.me/918650635775?text=Hi,%20I'm%20trying%20to%20track%20order%20${encodeURIComponent(cleanId)}" target="_blank">Chat with Support</a>
+              <a class="support-btn" href="contact.html">Contact Care</a>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    document.getElementById('trackForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const id = document.getElementById('trackOrderId').value;
+      const phone = document.getElementById('trackPhone').value;
+      searchOrder(id, phone);
+    });
+
+    // Auto-search if URL parameters are provided (e.g. ?id=CVR-123&phone=9876543210)
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id') || params.get('orderId');
+      const phone = params.get('phone');
+      if (id) document.getElementById('trackOrderId').value = id;
+      if (phone) document.getElementById('trackPhone').value = phone;
+      if (id && phone) searchOrder(id, phone);
+    });
+  </script>
+</body>
+</html>

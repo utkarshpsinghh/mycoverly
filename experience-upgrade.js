@@ -22,10 +22,13 @@
       originalRenderCart();
       document.querySelectorAll('#cartItems .cart-item').forEach((element, index) => {
         const item = cart[index];
-        const design = item && products.find(product => product.id === item.id);
+        if (!item) return;
+        const design = products.find(product => (item.designId && (product.designId === item.designId || String(product.id) === String(item.designId))) || String(product.id) === String(item.id)) || {};
         const thumb = element.querySelector('.thumb');
-        if (!design || !thumb) return;
-        thumb.innerHTML = design.image ? `<img src="${design.image}" alt="${design.n} design preview" loading="lazy">` : `<span class="thumb-fallback">${design.n.slice(0, 2)}</span>`;
+        if (!thumb) return;
+        const img = item.image || design.image;
+        const name = item.designName || design.n || 'Custom case';
+        thumb.innerHTML = img ? `<img src="${img}" alt="${name} design preview" loading="lazy">` : `<span class="thumb-fallback">${name.slice(0, 2)}</span>`;
         thumb.classList.add('design-thumb');
       });
     };
@@ -37,16 +40,20 @@
       if (summaryTitle) summaryTitle.textContent = 'Made for your phone.';
       document.querySelectorAll('#premiumItems .order-line').forEach((line, index) => {
         const item = cart[index];
-        const design = item && products.find(product => product.id === item.id);
+        if (!item) return;
+        const design = products.find(product => (item.designId && (product.designId === item.designId || String(product.id) === String(item.designId))) || String(product.id) === String(item.id)) || {};
         const productLine = line.querySelector('.order-product');
-        if (!design || !productLine) return;
+        if (!productLine) return;
         productLine.querySelector('.checkout-thumb')?.remove();
-        productLine.insertAdjacentHTML('afterbegin', design.image ? `<img class="checkout-thumb design-checkout-img" src="${design.image}" alt="${design.n} design preview">` : `<span class="checkout-thumb design-thumb-fallback">${design.n.slice(0, 2)}</span>`);
+        const img = item.image || design.image;
+        const name = item.designName || design.n || 'Custom case';
+        const price = item.unitPrice || design.p || 349;
+        productLine.insertAdjacentHTML('afterbegin', img ? `<img class="checkout-thumb design-checkout-img" src="${img}" alt="${name} design preview">` : `<span class="checkout-thumb design-thumb-fallback">${name.slice(0, 2)}</span>`);
         const text = productLine.querySelector('span:last-child');
         if (text) {
-          text.firstChild.textContent = design.n;
+          text.firstChild.textContent = name;
           const small = text.querySelector('small');
-          if (small) small.textContent = `${item.phoneBrand || 'Your phone'} ${item.phoneModel || ''} · Custom case · ${item.q} × ₹${design.p}`.replace(/\s+/g, ' ').trim();
+          if (small) small.textContent = `${item.phoneBrand || 'Your phone'} ${item.phoneModel || ''} · Custom case · ${item.q} × ₹${price}`.replace(/\s+/g, ' ').trim();
         }
       });
     };

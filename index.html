@@ -75,19 +75,19 @@
     .footer a{color:#d7ff64;text-decoration:none}
     .footer a:hover{text-decoration:underline}
     .cover-photo{width:100%;height:100%;object-fit:contain;display:block}
-    .cart-panel{position:fixed;z-index:20;right:0;top:0;width:min(410px,100%);height:100vh;background:var(--paper);box-shadow:-10px 0 40px #17261f33;transform:translateX(105%);transition:.25s;padding:24px;display:flex;flex-direction:column}
+    .cart-panel{position:fixed;z-index:20;right:0;top:0;width:min(410px,100%);height:100vh;height:100dvh;max-height:100dvh;background:var(--paper);box-shadow:-10px 0 40px #17261f33;transform:translateX(105%);transition:.25s ease;padding:24px;display:flex;flex-direction:column;overflow:hidden}
     .cart-panel.open{transform:translateX(0)}
-    .cart-title{display:flex;justify-content:space-between;align-items:center;font-size:22px;font-weight:800}
+    .cart-title{display:flex;justify-content:space-between;align-items:center;font-size:22px;font-weight:800;flex-shrink:0}
     .close{background:none;font-size:25px}
-    .items{flex:1;overflow:auto;margin:22px 0}
+    .items{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:18px 0 8px;padding-right:2px}
     .cart-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
-    .thumb{width:52px;height:70px;border-radius:4px;background:#f2f4ef;border:1px dashed #b6c1b6;overflow:hidden;display:grid;place-items:center}
+    .thumb{width:52px;height:70px;border-radius:4px;background:#f2f4ef;border:1px dashed #b6c1b6;overflow:hidden;display:grid;place-items:center;flex-shrink:0}
     .thumb img{width:100%;height:100%;object-fit:contain;display:block}
     .cart-item b{font-size:13px;display:block}
     .cart-item small{font-size:11px;color:var(--muted)}
     .qty{margin-top:8px;display:flex;gap:8px;align-items:center;font-size:12px}
     .qty button{width:22px;height:22px;border-radius:50%;background:#edf1ea}
-    .summary{border-top:1px solid var(--line);padding-top:18px}
+    .summary{border-top:1px solid var(--line);padding-top:16px;flex-shrink:0;background:var(--paper);margin-top:auto}
     .summary div{display:flex;justify-content:space-between;margin:9px 0;font-size:13px}
     .checkout{width:100%;background:var(--lime);color:var(--ink);padding:15px;border-radius:4px;font-weight:800;margin-top:12px}
     .empty{text-align:center;color:var(--muted);padding:80px 0}
@@ -178,11 +178,45 @@
       .promo{margin:0 16px;padding:28px 22px;border-radius:12px;display:block}
       .footer{padding:42px 20px;margin-top:50px;display:block}
       .footer p{margin-top:20px}
-      .cart-panel{padding:20px 16px}
-      .cart-title{font-size:21px}
+      .cart-panel{
+        height:100vh;
+        height:100dvh;
+        max-height:100dvh;
+        padding:20px 16px;
+      }
+      .cart-title{font-size:20px}
+      #cart .items{
+        flex:1 1 auto;
+        min-height:0;
+        overflow-y:auto;
+        -webkit-overflow-scrolling:touch;
+        padding-bottom:16px;
+      }
+      #cart .summary{
+        position:relative;
+        flex:0 0 auto;
+        margin-top:auto;
+        background:var(--paper);
+        border-top:1px solid var(--line);
+        padding-top:14px;
+        padding-bottom:calc(54px + env(safe-area-inset-bottom, 24px));
+        z-index:5;
+      }
+      #cart .summary .checkout{
+        position:static!important;
+        display:block!important;
+        width:100%!important;
+        margin-top:14px!important;
+        margin-bottom:8px!important;
+        padding:16px 18px!important;
+        font-size:14px!important;
+        font-weight:800!important;
+        border-radius:8px!important;
+        box-shadow:0 6px 20px rgba(41,35,63,0.18)!important;
+      }
     }
     @media(max-width:700px){
-      .premium-shell{max-height:calc(100vh - 20px)}
+      .premium-shell{max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px)}
       .premium-top{padding:24px 22px 16px}
       .stepper{padding:15px 22px}
       .premium-grid{display:block}
@@ -193,11 +227,14 @@
       .upi-card{display:block}
       .upi-card img{display:block;margin:18px auto 0}
       .field-grid{display:block}
-      .premium-pane .premium-continue{position:sticky;bottom:10px;z-index:4;box-shadow:0 8px 22px rgba(23,38,31,.18)}
+      .premium-pane .premium-continue{position:sticky;bottom:20px;z-index:4;box-shadow:0 8px 22px rgba(23,38,31,.18)}
       .payment-pane .premium-continue{margin-top:14px}
-      #cart .items{padding-bottom:88px}
-      #cart .summary{position:sticky;bottom:0;background:var(--paper);padding:14px 0 10px;z-index:5}
-      #cart .summary .checkout{position:fixed;left:18px;right:18px;bottom:16px;width:calc(100% - 36px);z-index:60;box-shadow:0 8px 22px rgba(23,38,31,.24);margin:0}
+      #cart .summary .checkout{
+        position:static!important;
+        width:100%!important;
+        margin-top:14px!important;
+        margin-bottom:8px!important;
+      }
     }
   </style>
 
@@ -421,6 +458,13 @@
     window.products = products;
     window.coverProducts = products;
     var cart = JSON.parse(localStorage.getItem('coverlyCart') || '[]');
+    // Sanitize any stale or corrupt mock entries from previous versions
+    cart = cart.filter(item => {
+      if (!item) return false;
+      const n = (item.designName || item.title || item.name || '').toLowerCase();
+      return !n.includes('rugged clear case') && !n.includes('galaxy a16 rugged');
+    });
+    try { localStorage.setItem('coverlyCart', JSON.stringify(cart)); } catch(e) {}
     window.cart = cart;
     var merchantUpiId = (window.COVERLY_CONFIG && window.COVERLY_CONFIG.MERCHANT_UPI_ID) ? window.COVERLY_CONFIG.MERCHANT_UPI_ID : 'paytm.s1i6534@pty';
     window.merchantUpiId = merchantUpiId;
@@ -460,31 +504,33 @@
 
     function cartTotal() {
       return cart.reduce((sum, item) => {
-        const p = products.find(prod => prod.id === item.id);
-        const unit = p ? (p.p || p.price || 499) : 499;
+        const p = products.find(prod => (item.designId && (prod.designId === item.designId || String(prod.id) === String(item.designId))) || String(prod.id) === String(item.id) || prod.id === item.id);
+        const unit = Number(item.unitPrice || item.price || (p ? (p.p || p.price || 349) : 349));
         return sum + unit * (item.q || 1);
       }, 0);
     }
 
     function add(id) {
-      let item = cart.find(x => x.id === id);
+      let item = cart.find(x => String(x.id) === String(id) || String(x.designId) === String(id));
       if (item) item.q++;
-      else cart.push({ id, q: 1 });
+      else cart.push({ id, designId: id, q: 1 });
       save();
       toggleCart(true);
     }
 
     function change(id, d) {
-      let x = cart.find(x => x.id === id);
+      let x = cart.find(x => String(x.id) === String(id) || String(x.designId) === String(id));
       if (!x) return;
       x.q += d;
-      if (x.q <= 0) cart = cart.filter(x => x.id !== id);
+      if (x.q <= 0) cart = cart.filter(item => !(String(item.id) === String(id) || String(item.designId) === String(id)));
       save();
     }
 
     function save() {
       localStorage.setItem('coverlyCart', JSON.stringify(cart));
+      window.cart = cart;
       renderCart();
+      if (typeof window.syncCoverlyBadges === 'function') window.syncCoverlyBadges();
     }
 
     function toggleCart(force) {
@@ -494,7 +540,7 @@
 
     function renderCart() {
       const list = document.getElementById('cartItems');
-      const count = cart.reduce((s, x) => s + x.q, 0);
+      const count = cart.reduce((s, x) => s + (Number(x.q) || 0), 0);
       const sum = cartTotal();
       const countEl = document.getElementById('cartCount');
       if (countEl) countEl.textContent = count;
@@ -508,22 +554,24 @@
 
       list.innerHTML = cart.length
         ? cart.map(x => {
-            const p = products.find(prod => prod.id === x.id) || {};
+            const p = products.find(prod => (x.designId && (prod.designId === x.designId || String(prod.id) === String(x.designId))) || String(prod.id) === String(x.id) || prod.id === x.id) || {};
             const name = x.designName || p.n || p.name || 'Custom Case';
             const phone = x.phoneModel ? `${x.phoneBrand || ''} ${x.phoneModel}`.trim() : (p.model || 'Phone Case');
-            const unitPrice = p.p || p.price || 499;
-            const thumb = p.image
-              ? `<img src="${p.image}" alt="${name}" loading="lazy">`
+            const unitPrice = Number(x.unitPrice || x.price || p.p || p.price || 349);
+            const imgSrc = x.image || p.image || '';
+            const thumb = imgSrc
+              ? `<img src="${imgSrc}" alt="${name}" loading="lazy">`
               : `<span class="thumb-fallback">${name.slice(0, 2)}</span>`;
+            const itemId = String(x.designId || x.id || '');
             return `<div class="cart-item">
               <div class="thumb design-thumb">${thumb}</div>
               <div style="flex:1">
                 <b>${name}</b>
                 <small>${phone} · ${money(unitPrice)}</small>
                 <div class="qty">
-                  <button onclick="change(${x.id},-1)">−</button>
+                  <button onclick="change('${itemId}',-1)">−</button>
                   ${x.q}
-                  <button onclick="change(${x.id},1)">+</button>
+                  <button onclick="change('${itemId}',1)">+</button>
                   <span style="margin-left:auto;font-weight:800">${money(unitPrice * x.q)}</span>
                 </div>
               </div>
@@ -614,13 +662,14 @@
       if (!container) return;
       container.innerHTML = cart.length
         ? cart.map(item => {
-            const design = products.find(p => p.id === item.id) || {};
+            const design = products.find(p => (item.designId && (p.designId === item.designId || String(p.id) === String(item.designId))) || String(p.id) === String(item.id) || p.id === item.id) || {};
             const name = item.designName || design.n || design.name || 'Custom case';
             const brand = item.phoneBrand || 'Phone';
             const model = item.phoneModel || '';
-            const price = design.p || design.price || 499;
-            const thumb = design.image
-              ? `<img class="checkout-thumb design-checkout-img" src="${design.image}" alt="${name}">`
+            const price = Number(item.unitPrice || item.price || design.p || design.price || 349);
+            const imgSrc = item.image || design.image || '';
+            const thumb = imgSrc
+              ? `<img class="checkout-thumb design-checkout-img" src="${imgSrc}" alt="${name}">`
               : `<span class="checkout-thumb design-thumb-fallback">${name.slice(0, 2)}</span>`;
             return `<div class="order-line">
               <span class="order-product">
