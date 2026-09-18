@@ -5,8 +5,8 @@
   function getEstimatedDeliveryText() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
     const now = new Date();
-    const d1 = new Date(now.getTime() + 1 * 86400000);
-    const d2 = new Date(now.getTime() + 2 * 86400000);
+    const d1 = new Date(now.getTime() + 2 * 86400000);
+    const d2 = new Date(now.getTime() + 3 * 86400000);
     return `Estimated delivery: ${d1.getDate()} ${months[d1.getMonth()]} – ${d2.getDate()} ${months[d2.getMonth()]}`;
   }
   window.getEstimatedDeliveryText = getEstimatedDeliveryText;
