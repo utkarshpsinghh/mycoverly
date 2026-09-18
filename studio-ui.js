@@ -5,6 +5,7 @@ window.addEventListener('load',()=>{
   hero.querySelector('p').className='studio-sub';
   hero.querySelector('p').textContent="Pick a design you love. It works with your phone — Android or iPhone. We'll make it just for you.";
   hero.querySelector('.cta').textContent='EXPLORE DESIGNS →';
+  document.querySelector('.tag').innerHTML='DESIGNED<br>FOR YOUR PHONE<br>✓';
   hero.querySelector('.cta').insertAdjacentHTML('afterend','<div class="compatibility">One design, made for your exact phone</div>');
   document.querySelector('.hero').insertAdjacentHTML('afterend','<section class="studio-steps" aria-label="How Coverly works"><div class="studio-step"><b>01</b><div><strong>Pick a design</strong><span>Find a vibe you love.</span></div></div><div class="studio-step"><b>02</b><div><strong>Tell us your phone</strong><span>Android or iPhone — type your exact model.</span></div></div><div class="studio-step"><b>03</b><div><strong>Make it yours</strong><span>Add text or a change request, then we create it.</span></div></div></section>');
   document.querySelector('#shop .toolbar').insertAdjacentHTML('beforebegin','<div class="studio-note"><b>Every design works with your phone.</b> Select a design first; you’ll choose your exact Android or iPhone model on the next screen.</div>');

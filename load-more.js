@@ -15,7 +15,7 @@
       const shown=Math.min(visible,cards.length);
       cards.forEach((card,index)=>{card.style.display='';card.hidden=index>=visible});
       const remaining=Math.max(0,cards.length-shown);
-      control.innerHTML=`<span>Showing <b>${shown}</b> of <b>${cards.length}</b> designs</span>${remaining?`<button type="button">Load ${Math.min(PAGE_SIZE,remaining)} more designs <i>↓</i></button>`:'<small>You’ve seen every design ✦</small>'}`;
+      control.innerHTML=`<span>Showing <b>${shown}</b> of <b>${cards.length}</b> designs</span>${remaining?'<button type="button">Load more <i>↓</i></button>':'<small>You’ve seen every design ✦</small>'}`;
       control.querySelector('button')?.addEventListener('click',()=>{visible+=PAGE_SIZE;update();document.getElementById('coverlyLoadMore')?.scrollIntoView({behavior:'smooth',block:'nearest'})});
       if(!control.isConnected)productGrid.parentElement.append(control);
     };
