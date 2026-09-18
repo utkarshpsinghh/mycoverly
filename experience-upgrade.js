@@ -33,6 +33,8 @@
     const originalPremiumSummary = window.premiumSummary;
     window.premiumSummary = () => {
       originalPremiumSummary();
+      const summaryTitle = document.querySelector('.order-summary h3');
+      if (summaryTitle) summaryTitle.textContent = 'Made for your phone.';
       document.querySelectorAll('#premiumItems .order-line').forEach((line, index) => {
         const item = cart[index];
         const design = item && products.find(product => product.id === item.id);
@@ -44,7 +46,7 @@
         if (text) {
           text.firstChild.textContent = design.n;
           const small = text.querySelector('small');
-          if (small) small.textContent = `Custom case · ${item.phoneBrand || 'Your phone'} ${item.phoneModel || ''} · ${item.q} × ₹${design.p}`;
+          if (small) small.textContent = `${item.phoneBrand || 'Your phone'} ${item.phoneModel || ''} · Custom case · ${item.q} × ₹${design.p}`.replace(/\s+/g, ' ').trim();
         }
       });
     };
