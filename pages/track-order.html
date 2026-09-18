@@ -291,20 +291,40 @@
       'Delivered'
     ];
 
-    function getActiveStepIndex(status) {
-      if (!status) return 0;
-      const s = String(status).toLowerCase().trim();
-      if (s.includes('deliver')) return 6;
-      if (s.includes('ship') || s.includes('courier') || s.includes('dispatch') || s.includes('transit') || s.includes('out for')) return 5;
-      if (s.includes('quality') || s.includes('check')) return 4;
-      if (s.includes('product') || s.includes('print') || s.includes('making')) return 3;
-      if (s.includes('design') || s.includes('review') || s.includes('prep')) return 2;
-      if (s.includes('verif') || s.includes('paid') || s.includes('received')) return 1;
+    function getActiveStepIndex(order) {
+      if (!order) return 0;
+      if (typeof order === 'string') {
+        order = { orderStatus: order };
+      }
+      const status = String(order.orderStatus || '').toLowerCase().trim();
+      const prodStatus = String(order.productionStatus || '').toLowerCase().trim();
+      const payStatus = String(order.paymentStatus || '').toLowerCase().trim();
+      const hasCourier = Boolean(order.courier || order.trackingUrl);
+
+      // 6. Delivered
+      if (status.includes('deliver') || prodStatus.includes('deliver')) return 6;
+
+      // 5. Shipped / In Transit / Dispatched
+      if (status.includes('ship') || status.includes('transit') || status.includes('dispatch') || status.includes('out for') || prodStatus.includes('ship') || hasCourier) return 5;
+
+      // 4. Quality Check
+      if (status.includes('quality') || status.includes('qa') || status.includes('qc') || status.includes('check') || prodStatus.includes('quality') || prodStatus.includes('qa')) return 4;
+
+      // 3. Case Production / Printing
+      if (status.includes('product') || status.includes('print') || status.includes('making') || prodStatus.includes('product') || prodStatus.includes('print')) return 3;
+
+      // 2. Design Review
+      if (status.includes('design') || status.includes('review') || status.includes('prep') || prodStatus.includes('design') || prodStatus.includes('review')) return 2;
+
+      // 1. Payment Verified
+      if (status.includes('verif') || status.includes('paid') || payStatus.includes('verif') || payStatus.includes('paid') || payStatus.includes('received') || payStatus.includes('success')) return 1;
+
+      // 0. Order Placed
       return 0;
     }
 
     function renderOrderCard(order, source) {
-      const activeIdx = getActiveStepIndex(order.orderStatus);
+      const activeIdx = getActiveStepIndex(order);
       const itemsText = order.items
         ? (Array.isArray(order.items)
             ? order.items.map(i => `${i.designName || i.title || 'Case'} (${i.phoneBrand || ''} ${i.phoneModel || ''}) × ${i.quantity || 1}`).join(', ')
@@ -412,7 +432,7 @@
 
       submitBtn.disabled = false;
 
-      const order = sheetOrder || localOrder;
+      const order = sheetOrder ? { ...(localOrder || {}), ...sheetOrder } : localOrder;
       if (order) {
         resultEl.innerHTML = renderOrderCard(order, sheetOrder ? 'sheet' : 'local');
         resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

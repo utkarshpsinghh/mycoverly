@@ -1,1 +1,192 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Order placed — Coverly</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="checkout.css"></head><body><header class="header"><a class="logo" href="index.html">COVER<span>LY</span></a></header><main class="checkout-page"><section id="success"></section></main><script>let o=JSON.parse(localStorage.getItem('coverlyLastOrder')||'null');if(!o)location.href='index.html';else success.innerHTML=`<p class="eyebrow">Order confirmed</p><h1>Order placed successfully!</h1><p><b>Order ID: ${o.orderId}</b></p><p>${o.paymentMethod==='COD'?'Your ₹199 advance payment is awaiting verification.':'Your payment is awaiting verification.'}</p><div class="order-card"><p>Order total <b>₹${o.total}</b></p><p>Amount paid <b>₹${o.amountPaid}</b></p>${o.amountRemaining?`<p>Remaining on delivery <b>₹${o.amountRemaining}</b></p>`:''}<p>${o.customerName} · ${o.city}</p><p>${o.items.map(i=>i.model+' '+i.type+' × '+i.quantity).join('<br>')}</p></div><p>We’ll contact you if we need anything else.</p><a class="button" href="pages/track-order.html">TRACK ORDER</a> <a class="button" style="border:1px solid var(--line);background:white;color:var(--ink)" href="index.html">CONTINUE SHOPPING</a>`;</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Order Confirmed — Coverly</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="checkout.css">
+  <style>
+    .success-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+    .success-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 36px 28px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    }
+    .check-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #eaf8ea;
+      color: #2e7d32;
+      display: grid;
+      place-items: center;
+      font-size: 32px;
+      font-weight: bold;
+    }
+    .order-id-box {
+      background: #fbf9fd;
+      border: 2px dashed #cfc2df;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 24px auto;
+      max-width: 440px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .order-id-box strong {
+      font-size: 20px;
+      letter-spacing: .02em;
+      color: #29233f;
+      display: block;
+    }
+    .copy-id-btn {
+      background: #29233f;
+      color: #fff;
+      border: 0;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+    .copy-id-btn:hover {
+      background: #463c68;
+    }
+    .success-details {
+      text-align: left;
+      margin: 28px 0 24px;
+      background: var(--paper);
+      border-radius: 8px;
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .success-details b {
+      color: var(--ink);
+    }
+    .success-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .success-actions .btn-track {
+      background: var(--lime);
+      color: var(--ink);
+      font-weight: 800;
+      padding: 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      box-shadow: 0 4px 14px rgba(215,255,100,0.4);
+    }
+    .success-actions .btn-secondary {
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="announcement">CUSTOM PHONE CASES · 100% SATISFACTION GUARANTEED</div>
+  <header class="header">
+    <a class="logo" href="index.html">COVER<span>LY</span></a>
+    <a href="index.html" class="cart-toggle">Continue shopping</a>
+  </header>
+
+  <main class="success-container">
+    <div class="success-card" id="successCard">
+      <div class="check-icon">✓</div>
+      <p class="eyebrow" style="color:#2e7d32">Order Placed</p>
+      <h1 style="margin: 6px 0 10px; font-size: 32px; letter-spacing: -.03em">Thank you for your order!</h1>
+      <p style="color:var(--muted); font-size: 14px; margin: 0">We have received your custom case order. Save your Order ID below to track production & shipping.</p>
+
+      <div class="order-id-box">
+        <div style="text-align:left">
+          <small style="color:var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 700; display:block">Your Order ID</small>
+          <strong id="displayOrderId">CVR-ORDER</strong>
+        </div>
+        <button class="copy-id-btn" id="copyBtn" onclick="copyOrderId()">Copy ID</button>
+      </div>
+
+      <div id="orderDetailsBox" class="success-details"></div>
+
+      <div class="success-actions">
+        <a class="btn-track" id="trackOrderBtn" href="pages/track-order.html">TRACK ORDER STATUS →</a>
+        <a class="btn-secondary" id="whatsappHelpBtn" href="#" target="_blank">💬 Chat with Us on WhatsApp</a>
+        <a class="btn-secondary" href="index.html">Continue exploring cases</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const order = JSON.parse(localStorage.getItem('coverlyLastOrder') || 'null');
+    if (!order) {
+      location.href = 'index.html';
+    } else {
+      const orderId = order.orderId || 'CVR-PENDING';
+      const phone = order.phone || (order.customer && order.customer.phone) || '';
+      const name = order.customerName || (order.customer && order.customer.name) || 'Customer';
+      const city = order.city || (order.customer && order.customer.city) || '';
+      const total = order.total || order.subtotal || 0;
+      const amountPaid = order.amountPaid || total;
+      const amountRemaining = order.amountRemaining || 0;
+
+      document.getElementById('displayOrderId').textContent = orderId;
+      document.getElementById('trackOrderBtn').href = `pages/track-order.html?id=${encodeURIComponent(orderId)}&phone=${encodeURIComponent(phone)}`;
+      document.getElementById('whatsappHelpBtn').href = `https://wa.me/918650635775?text=Hi%20Coverly,%20I%20just%20placed%20order%20${encodeURIComponent(orderId)}`;
+
+      let itemsHtml = '';
+      if (order.items && Array.isArray(order.items)) {
+        itemsHtml = order.items.map(i => {
+          const itemTitle = i.designName || i.name || i.title || 'Custom Case';
+          const model = i.phoneModel || i.model || '';
+          const brand = i.phoneBrand || '';
+          return `<div>• <b>${itemTitle}</b> for ${brand} ${model} (${i.customizationType || i.type || 'Custom Finish'}) × ${i.quantity || 1}</div>`;
+        }).join('');
+      }
+
+      document.getElementById('orderDetailsBox').innerHTML = `
+        <div style="margin-bottom: 10px"><b>Customer:</b> ${name} (${phone})</div>
+        <div style="margin-bottom: 10px"><b>Delivery to:</b> ${city || 'Provided Address'}</div>
+        <div style="margin-bottom: 10px"><b>Payment:</b> ${order.paymentMethod || 'UPI'} · Amount Paid: ₹${amountPaid} ${amountRemaining ? `(₹${amountRemaining} balance on delivery)` : ''}</div>
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line)">
+          <b style="display:block;margin-bottom:6px">Ordered Items:</b>
+          ${itemsHtml || 'Custom Phone Case'}
+        </div>
+      `;
+    }
+
+    function copyOrderId() {
+      const orderId = document.getElementById('displayOrderId').textContent;
+      navigator.clipboard.writeText(orderId).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copied! ✓';
+        btn.style.background = '#2e7d32';
+        setTimeout(() => {
+          btn.textContent = 'Copy ID';
+          btn.style.background = '#29233f';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

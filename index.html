@@ -398,6 +398,15 @@
         <section class="premium-pane payment-pane" id="premiumPayment">
           <button class="back-link" onclick="premiumBackToDetails()">← Edit details</button>
           <p class="pane-intro">Complete your order</p>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#f5f0fa;border:1px solid #e0d5eb;padding:10px 14px;border-radius:8px;margin-bottom:14px">
+            <div>
+              <span style="font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:700;display:block">Your Order ID</span>
+              <strong id="displayOrderId" style="font-size:16px;color:#29233f;letter-spacing:.02em">CVR-PENDING</strong>
+            </div>
+            <button type="button" onclick="copyCheckoutOrderId(this)" style="background:#fff;border:1px solid #cfc0e2;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Copy ID</button>
+          </div>
+
           <div class="premium-method-choices" id="premiumMethodChoices">
             <button type="button" id="upiMethod" class="payment-method active" onclick="setPaymentChoice('upi')">
               Prepaid UPI<small>Pay now and save 10%</small>
@@ -410,11 +419,22 @@
             <div>
               <div class="eyebrow">UPI payment</div>
               <h3>Scan and pay <span id="premiumPayAmount">₹0</span></h3>
-              <p>Open any UPI app and scan the secure QR code.</p>
+              <p>Scan with Google Pay, PhonePe, Paytm, or BHIM. Order ID is included in note.</p>
             </div>
             <img id="premiumQr" alt="UPI payment QR code">
           </div>
-          <button class="checkout premium-continue" onclick="premiumPay()">Open UPI app <span>→</span></button>
+          <button class="checkout premium-continue" onclick="premiumPay('upi_intent')">Pay via UPI app (PhonePe / GPay) <span>→</span></button>
+
+          <div style="margin-top:16px;padding:14px;background:#fafbfa;border:1px dashed #d5ded4;border-radius:8px">
+            <label style="display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px">
+              UTR / UPI Reference Number (If paid via QR scan)
+              <input id="premiumUtrInput" placeholder="Enter 12-digit UTR (optional)" maxlength="22" style="display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #d0d6ce;border-radius:6px;font-size:13px">
+            </label>
+            <button type="button" onclick="premiumPay('confirm')" style="width:100%;background:#17261f;color:#fff;border:0;border-radius:6px;padding:13px;font-size:12px;font-weight:800;cursor:pointer;margin-top:4px">
+              I have paid · View Order Confirmation →
+            </button>
+          </div>
+
           <p id="premiumPaymentError" class="checkout-error"></p>
           <p class="secure-note">Never share your UPI PIN or OTP. Your order is confirmed only after payment is verified.</p>
         </section>
@@ -712,6 +732,32 @@
       document.getElementById('premiumHeading').textContent = 'Your details';
     }
 
+    function generateOrderId() {
+      if (window.activeCheckoutOrderId) return window.activeCheckoutOrderId;
+      const id = 'CVR-' + (crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase().slice(-6) : Math.floor(100000 + Math.random() * 900000));
+      window.activeCheckoutOrderId = id;
+      return id;
+    }
+
+    function copyCheckoutOrderId(btn) {
+      const id = window.activeCheckoutOrderId || document.getElementById('displayOrderId')?.textContent || '';
+      if (!id) return;
+      navigator.clipboard.writeText(id).then(() => {
+        if (btn) {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied! ✓';
+          btn.style.borderColor = '#2e7d32';
+          btn.style.color = '#2e7d32';
+          setTimeout(() => {
+            btn.textContent = orig;
+            btn.style.borderColor = '#cfc0e2';
+            btn.style.color = '';
+          }, 2000);
+        }
+      });
+    }
+    window.copyCheckoutOrderId = copyCheckoutOrderId;
+
     function setPaymentChoice(choice) {
       selectedPremiumPayment = choice;
       window.selectedPremiumPayment = choice;
@@ -730,7 +776,11 @@
       const payAmount = choice === 'cod' ? advance : prepaid;
       if (amountEl) amountEl.textContent = money(payAmount);
 
-      upiIntent = `upi://pay?pa=${merchantUpiId}&pn=Coverly&am=${payAmount}&cu=INR`;
+      const orderId = generateOrderId();
+      const displayEl = document.getElementById('displayOrderId');
+      if (displayEl) displayEl.textContent = orderId;
+
+      upiIntent = `upi://pay?pa=${merchantUpiId}&pn=Coverly&am=${payAmount}&cu=INR&tn=${orderId}`;
       const qr = document.getElementById('premiumQr');
       if (qr) renderCoverlyQr('premiumQr', upiIntent, 220);
     }
@@ -765,6 +815,10 @@
         return;
       }
       premiumClearError();
+      window.activeCheckoutOrderId = 'CVR-' + (crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase().slice(-6) : Math.floor(100000 + Math.random() * 900000));
+      const displayEl = document.getElementById('displayOrderId');
+      if (displayEl) displayEl.textContent = window.activeCheckoutOrderId;
+
       setPaymentChoice(selectedPremiumPayment || 'upi');
       document.getElementById('premiumDetails').style.display = 'none';
       document.getElementById('premiumPayment').classList.add('show');

@@ -1,6 +1,6 @@
-/* Extends the existing UPI submission payload with custom-design details. */
+/* Extends the existing UPI submission payload with custom-design details and post-payment tracking redirect. */
 window.addEventListener('load', () => {
-  window.premiumPay = function() {
+  window.premiumPay = function(action) {
     const endpoint = window.coverlyOrderWebhook || '';
     const error = document.getElementById('premiumPaymentError');
     if (!endpoint) {
@@ -11,9 +11,11 @@ window.addEventListener('load', () => {
       return;
     }
     const button = document.querySelector('#premiumPayment .premium-continue');
-    const orderId = 'CVR-' + Date.now().toString(36).toUpperCase();
-    const items = cart.map(item => {
-      const design = products.find(p => (item.designId && (p.designId === item.designId || String(p.id) === String(item.designId))) || String(p.id) === String(item.id)) || {};
+    const orderId = window.activeCheckoutOrderId || ('CVR-' + (crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase().slice(-6) : Math.floor(100000 + Math.random() * 900000)));
+    const utr = (document.getElementById('premiumUtrInput')?.value || '').trim();
+
+    const items = (window.cart || cart || []).map(item => {
+      const design = (window.products || []).find(p => (item.designId && (p.designId === item.designId || String(p.id) === String(item.designId))) || String(p.id) === String(item.id)) || {};
       return {
         designId: item.designId || design.designId || '',
         designName: item.designName || design.n || '',
@@ -34,7 +36,7 @@ window.addEventListener('load', () => {
       };
     });
 
-    const subtotal = cartTotal();
+    const subtotal = typeof window.cartTotal === 'function' ? window.cartTotal() : 499;
     const isCod = (window.selectedPremiumPayment || selectedPremiumPayment) === 'cod';
     const amountPaid = isCod ? Math.min(199, subtotal) : Math.round(subtotal * 0.9);
     const discount = isCod ? 0 : subtotal - amountPaid;
@@ -42,6 +44,13 @@ window.addEventListener('load', () => {
     const payload = {
       orderId,
       createdAt: new Date().toISOString(),
+      customerName: document.getElementById('pName')?.value.trim() || '',
+      phone: (document.getElementById('pPhone')?.value || '').replace(/\D/g, ''),
+      email: document.getElementById('pEmail')?.value.trim() || '',
+      address: document.getElementById('pAddress')?.value.trim() || '',
+      city: document.getElementById('pCity')?.value.trim() || '',
+      state: document.getElementById('pState')?.value.trim() || '',
+      pincode: document.getElementById('pPin')?.value.trim() || '',
       customer: {
         name: document.getElementById('pName')?.value.trim() || '',
         phone: (document.getElementById('pPhone')?.value || '').replace(/\D/g, ''),
@@ -59,15 +68,24 @@ window.addEventListener('load', () => {
       total: subtotal,
       amountPaid,
       amountRemaining: isCod ? subtotal - amountPaid : 0,
+      utr,
       items
     };
 
-    // Save to localStorage for instant order tracking
+    // Save order locally for instant tracking
     try {
       const existingOrders = JSON.parse(localStorage.getItem('coverlyOrders') || '[]');
       existingOrders.unshift(payload);
       localStorage.setItem('coverlyOrders', JSON.stringify(existingOrders.slice(0, 25)));
       localStorage.setItem('coverlyLastOrder', JSON.stringify(payload));
+    } catch (_) {}
+
+    // Clear cart once order is registered
+    try {
+      localStorage.removeItem('coverlyCart');
+      window.cart = [];
+      if (typeof window.renderCart === 'function') window.renderCart();
+      if (typeof window.syncCoverlyBadges === 'function') window.syncCoverlyBadges();
     } catch (_) {}
 
     if (button) {
@@ -76,6 +94,7 @@ window.addEventListener('load', () => {
       if (s) s.textContent = '…';
     }
 
+    // Transmit order to Google Sheets
     const body = JSON.stringify(payload);
     let sent = false;
     try {
@@ -87,8 +106,18 @@ window.addEventListener('load', () => {
       } catch (_) {}
     }
 
-    const mid = window.merchantUpiId || window.COVERLY_CONFIG?.MERCHANT_UPI_ID || 'paytm.s1i6534@pty';
-    const paymentUri = `upi://pay?pa=${mid}&pn=Coverly&am=${amountPaid}&cu=INR&tn=${orderId}`;
-    window.location.href = paymentUri;
+    // Handle navigation
+    if (action === 'confirm') {
+      window.location.href = 'order-success.html';
+    } else {
+      // action === 'upi_intent'
+      const mid = window.merchantUpiId || window.COVERLY_CONFIG?.MERCHANT_UPI_ID || 'paytm.s1i6534@pty';
+      const paymentUri = `upi://pay?pa=${mid}&pn=Coverly&am=${amountPaid}&cu=INR&tn=${orderId}`;
+      window.location.href = paymentUri;
+      // When returning from UPI app or if intent handler opens externally, browser lands on confirmation page
+      setTimeout(() => {
+        window.location.href = 'order-success.html';
+      }, 1000);
+    }
   };
 });
