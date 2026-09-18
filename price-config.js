@@ -40,3 +40,4 @@ window.coverPriceOverrides = {
   'Beats iPhone 16 Plus Case with MagSafe – Midnight Black': { original: 4900, discounted: 799 },
   'iPhone 15 Pro Max Silicone Case with MagSafe – Storm Blue': { original: 4900, discounted: 799 }
 };
+

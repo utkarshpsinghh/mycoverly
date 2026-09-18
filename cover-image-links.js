@@ -201,3 +201,4 @@ window.addEventListener('load', () => {
   window.renderProducts = () => { render(); document.querySelectorAll('.product').forEach(applyCoverImageForCard); };
   window.renderProducts();
 });
+

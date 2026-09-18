@@ -1,0 +1,2 @@
+/* Loads published designs from the public Apps Script endpoint; local catalogue remains a safe fallback. */
+window.addEventListener('load',async()=>{const endpoint=window.coverlyOrderWebhook;if(!endpoint)return;try{const response=await fetch(`${endpoint}?action=designs`,{cache:'no-store'});const data=await response.json();if(!data.ok||!Array.isArray(data.designs)||!data.designs.length)return;const next=JSON.stringify(data.designs),key='coverlyDesignSheetCache';if(localStorage.getItem(key)!==next){localStorage.setItem(key,next);location.reload()}}catch(_){}});
