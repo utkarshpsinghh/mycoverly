@@ -50,8 +50,8 @@ input {
 }
 
 input:focus {
-  border-color: #597d63;
-  box-shadow: 0 0 0 3px #d9ebd6;
+  border-color: var(--pine);
+  box-shadow: 0 0 0 3px #f1eaff;
 }
 
 .two {
@@ -74,8 +74,8 @@ input:focus {
 
 .pay-option:has(input:checked) {
   border: 2px solid var(--pine);
-  background: #f1f8df;
-  box-shadow: 0 0 0 3px #d7ff6444;
+  background: #faf5fd;
+  box-shadow: 0 0 0 3px #ffc9df44;
 }
 
 .pay-option input {
@@ -151,16 +151,16 @@ input:focus {
 }
 
 .button, button.button {
-  background: var(--lime);
-  color: var(--ink);
+  background: var(--ink);
+  color: #fff;
   font-weight: 800;
   font-size: 14px;
   padding: 16px 20px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 0;
   width: 100%;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(215,255,100,0.4);
+  box-shadow: 0 4px 14px rgba(41,35,63,0.2);
   transition: opacity .2s;
 }
 

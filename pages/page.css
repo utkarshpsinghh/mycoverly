@@ -1,14 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Mono:wght@500;700&display=swap');
 
 :root {
-  --ink: #17261f;
-  --pine: #244b3b;
-  --lime: #d7ff64;
-  --cream: #f7f5ee;
-  --paper: #fffefa;
-  --muted: #6c756f;
-  --line: #dfe4dc;
-  --orange: #f08e55;
+  --ink: #29233f;
+  --pine: #6b5a99;
+  --lime: #ffc9df;
+  --cream: #fff8fc;
+  --paper: #fffdfd;
+  --muted: #746c80;
+  --line: #e9dfee;
+  --orange: #ffb7a5;
+  --yellow: #fedb71;
+  --lilac: #a67ec5;
 }
 
 * {
@@ -33,7 +35,7 @@ body {
 
 .bar {
   background: var(--ink);
-  color: #f5f2e7;
+  color: #f5eff9;
   font: 500 11px 'DM Mono', monospace;
   letter-spacing: .08em;
   text-align: center;
@@ -63,7 +65,7 @@ body {
 }
 
 .logo i, .logo span {
-  color: #4c936e;
+  color: var(--lilac);
   font-style: normal;
 }
 
@@ -108,7 +110,7 @@ body {
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--pine);
-  background: #e4eed6;
+  background: #f1eaff;
   padding: 6px 12px;
   border-radius: 99px;
   display: inline-block;
@@ -215,7 +217,7 @@ body {
 }
 
 .footer a {
-  color: var(--lime);
+  color: var(--yellow);
   text-decoration: none;
   font-weight: 600;
 }
