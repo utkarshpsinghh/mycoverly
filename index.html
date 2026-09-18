@@ -26,7 +26,7 @@
   <script src="cover-image-links.js" defer></script>
   <script src="price-config.js"></script>
   <script src="google-sheets-config.js"></script>
-  <link rel="stylesheet" href="studio-ui.css"><script src="design-catalog.js"></script><script src="designs-sync.js" defer></script><script src="custom-design.js" defer></script><script src="custom-ui.js" defer></script><script src="studio-ui.js" defer></script><script src="experience-upgrade.js" defer></script><script src="custom-order-data.js" defer></script>
+  <link rel="stylesheet" href="studio-ui.css"><link rel="stylesheet" href="journey-upgrade.css"><script src="design-catalog.js"></script><script src="designs-sync.js" defer></script><script src="custom-design.js" defer></script><script src="custom-ui.js" defer></script><script src="studio-ui.js" defer></script><script src="experience-upgrade.js" defer></script><script src="journey-upgrade.js" defer></script><script src="custom-order-data.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
   <!-- Google tag (gtag.js) -->
@@ -153,7 +153,7 @@ products.forEach(p=>{const custom=(window.coverPriceOverrides||{})[p.title];if(c
 <script>
 // Final payment handler includes the selected discount/advance terms in the Sheet row.
 premiumPay=function(){
-  const choice=selectedPremiumPayment||'upi',terms=window.coverlyPaymentOverride||{},amount=choice==='cod'?Math.min(199,cartTotal()):Math.round(cartTotal()*0.8),endpoint=window.coverlyOrderWebhook||'',error=document.getElementById('premiumPaymentError');
+  const choice=selectedPremiumPayment||'upi',terms=window.coverlyPaymentOverride||{},amount=choice==='cod'?Math.min(199,cartTotal()):Math.round(cartTotal()*.9),endpoint=window.coverlyOrderWebhook||'',error=document.getElementById('premiumPaymentError');
   if(!endpoint){error.textContent='Payment setup is incomplete. Please contact support.';error.style.display='block';return}
   const payload={orderId:'CVR-'+Date.now().toString(36).toUpperCase(),customer:{name:document.getElementById('pName').value.trim(),phone:document.getElementById('pPhone').value.replace(/\D/g,''),email:document.getElementById('pEmail').value.trim(),address:document.getElementById('pAddress').value.trim(),city:document.getElementById('pCity').value.trim(),state:document.getElementById('pState').value.trim(),pincode:document.getElementById('pPin')?.value.trim()||''},selectedPaymentMethod:terms.method||'Prepaid',paymentMethod:terms.method||'Prepaid',paymentStatus:'Payment initiated',total:amount,originalTotal:terms.fullTotal||cartTotal(),discount:terms.discount||0,amountPaidNow:amount,balanceOnDelivery:terms.balanceOnDelivery||0,items:cart.map(item=>{const p=products.find(product=>product.id===item.id);return {title:p.title,model:p.model,colour:p.colour,material:p.material,quantity:item.q,unitPrice:p.p}})};
   const body='payload='+encodeURIComponent(JSON.stringify(payload));try{navigator.sendBeacon(endpoint,new Blob([body],{type:'application/x-www-form-urlencoded;charset=UTF-8'}))}catch(ignore){};
@@ -167,15 +167,15 @@ premiumPay=function(){
 (()=>{const android={Samsung:['Galaxy M14','Galaxy M15','Galaxy M34','Galaxy M35','Galaxy A05','Galaxy A06','Galaxy A14','Galaxy A15','Galaxy A16','Galaxy A25','Galaxy A35','Galaxy A36','Galaxy A55','Galaxy A56','Galaxy S24','Galaxy S24 Ultra','Galaxy S25','Galaxy S25 Ultra','Galaxy S26 Ultra'],Redmi:['Redmi 12','Redmi 13','Redmi 14C','Redmi Note 12','Redmi Note 12 Pro','Redmi Note 12 Pro+','Redmi Note 13','Redmi Note 13 Pro','Redmi Note 13 Pro+','Redmi Note 14','Redmi Note 14 Pro','Redmi Note 14 Pro+'],Xiaomi:['Xiaomi 14','Xiaomi 14 Civi'],POCO:['POCO M6','POCO X6','POCO X7'],Realme:['Realme C53','Realme C55','Realme C67','Realme 12','Realme 13','Realme Narzo series (model-family placeholder)'],Vivo:['Vivo Y17s','Vivo Y18','Vivo Y28','Vivo Y29','Vivo Y200'],OPPO:['OPPO A18','OPPO A38','OPPO A58','OPPO K12x'],Motorola:['Moto G34','Moto G64','Moto G84','Motorola Edge series (model-family placeholder)'],OnePlus:['OnePlus Nord CE4','OnePlus Nord 4','OnePlus 12R','OnePlus 13R','OnePlus 13'],'Google Pixel':['Pixel 8a','Pixel 9','Pixel 9a','Pixel 9 Pro']},types=['Clear','Matte','Silicone','Shockproof','Premium'];products.splice(0);let id=0;Object.entries(android).forEach(([brand,models])=>models.forEach((model,i)=>{let type=types[id%types.length],colour=['Clear','Charcoal','Sage','Navy','Sand'][id%5],price=i%4===0?599:i%3===0?549:499;products.push({id:++id,n:`${model} ${type} Case`,title:`${model} ${type} Case`,brand,model,material:type,style:type,p:price,old:price+100,c:'c'+(id%8+1),colour,colours:[colour,'Black'],materials:[type],tag:i%3===0?'Best seller':'New'})}));window.coverProducts=products;cart=cart.filter(item=>products.some(p=>p.id===item.id));localStorage.setItem('coverlyCart',JSON.stringify(cart));selected='All';renderBrands=function(){document.getElementById('brandGrid').innerHTML=Object.entries(android).map(([brand,models])=>`<button class="brand" onclick="filterBrand('${brand}')">${brand}<small>${models.length} models</small></button>`).join('');document.getElementById('filters').innerHTML=Object.keys(android).map((brand,i)=>`<button class="${i?'':'active'}" onclick="filterBrand('${brand}')">${brand}</button>`).join('')};filterBrand=function(brand){selected=brand;optionList('modelFilter',android[brand]||Object.values(android).flat(),'models');renderProducts()};resetFilters=function(){selected='All';optionList('modelFilter',Object.values(android).flat(),'models');renderBrands();renderProducts()};optionList('modelFilter',Object.values(android).flat(),'models');optionList('colourFilter',['Black','Charcoal','Clear','Navy','Sage','Sand'],'colours');optionList('styleFilter',types,'case types');renderBrands();renderProducts();})();
 </script>
 <script>
-// Payment choices: prepaid gets 20% off; COD requires a ₹199 UPI advance.
+// Payment choices: prepaid gets 10% off; COD requires a ₹199 UPI advance.
 (function(){
   const paymentPane=document.getElementById('premiumPayment');
   if(paymentPane&&!document.getElementById('premiumMethodChoices')){
     const choices=document.createElement('div');choices.id='premiumMethodChoices';choices.className='premium-method-choices';
-    choices.innerHTML='<button type="button" id="upiMethod" class="payment-method active">Prepaid UPI<small>Pay now and save 20%</small></button><button type="button" id="codMethod" class="payment-method">Cash on Delivery<small>₹199 advance, balance on delivery</small></button>';
+    choices.innerHTML='<button type="button" id="upiMethod" class="payment-method active">Prepaid UPI<small>Pay now and save 10%</small></button><button type="button" id="codMethod" class="payment-method">Cash on Delivery<small>₹199 advance, balance on delivery</small></button>';
     paymentPane.querySelector('.upi-card')?.before(choices);
   }
-  const fullTotal=()=>Number(cartTotal()||0), prepaidTotal=()=>Math.round(fullTotal()*0.8), advance=199;
+  const fullTotal=()=>Number(cartTotal()||0), prepaidTotal=()=>Math.round(fullTotal()*.9), advance=199;
   function setPaymentChoice(choice){
     selectedPremiumPayment=choice;
     const upi=document.getElementById('upiMethod'),cod=document.getElementById('codMethod'),amount=document.getElementById('premiumPayAmount'),error=document.getElementById('premiumPaymentError');
@@ -183,9 +183,9 @@ premiumPay=function(){
     if(amount) amount.textContent=money(choice==='cod'?advance:prepaidTotal());
     if(error) error.style.display='none';
     const intro=document.querySelector('#premiumPayment .pane-intro');
-    if(intro) intro.textContent=choice==='cod'?`Pay ${money(Math.min(advance,fullTotal()))} advance to confirm COD`:'Pay securely online and save 20%';
+    if(intro) intro.textContent=choice==='cod'?`Pay ${money(Math.min(advance,fullTotal()))} advance to confirm COD`:'Pay securely online and save 10%';
     const note=document.querySelector('#premiumPayment .cod-off');
-    if(note) note.textContent=choice==='cod'?`COD is available. Pay ${money(Math.min(advance,fullTotal()))} now by UPI; the remaining balance is payable on delivery.`:'Prepaid offer: enjoy 20% off your order when you pay online.';
+    if(note) note.textContent=choice==='cod'?`COD is available. Pay ${money(Math.min(advance,fullTotal()))} now by UPI; the remaining balance is payable on delivery.`:'Prepaid offer: enjoy 10% off your order when you pay online.';
   }
   document.getElementById('upiMethod')?.addEventListener('click',()=>setPaymentChoice('upi'));
   document.getElementById('codMethod')?.addEventListener('click',()=>setPaymentChoice('cod'));
