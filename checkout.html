@@ -1,1 +1,107 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout — Coverly</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="checkout.css"><script src="config.js" defer></script><script src="google-sheets-config.js" defer></script><script src="checkout.js" defer></script></head><body><div class="announcement">SECURE UPI CHECKOUT · PAYMENT VERIFICATION IS MANUAL</div><header class="header"><a class="logo" href="index.html">COVER<span>LY</span></a><a href="index.html" class="cart-toggle">Continue shopping</a></header><main class="checkout-page"><section><p class="eyebrow">Checkout</p><h1>Delivery details</h1><form id="checkoutForm"><fieldset><legend>CONTACT INFORMATION</legend><label>Full name *<input name="name" required autocomplete="name"></label><label>Mobile number *<input name="phone" required inputmode="numeric" pattern="[0-9]{10}" placeholder="10-digit mobile number" autocomplete="tel"></label><label>Email <input name="email" type="email" autocomplete="email"></label></fieldset><fieldset><legend>DELIVERY ADDRESS</legend><label>House / Flat / Building *<input name="address" required autocomplete="address-line1"></label><label>Area / Street *<input name="area" required autocomplete="address-line2"></label><div class="two"><label>City *<input name="city" required autocomplete="address-level2"></label><label>State *<input name="state" required autocomplete="address-level1"></label></div><label>PIN code *<input name="pincode" required inputmode="numeric" pattern="[0-9]{6}" autocomplete="postal-code"></label></fieldset><fieldset><legend>PAYMENT METHOD</legend><label class="pay-option"><input type="radio" name="method" value="prepaid" checked><span><b>Prepaid UPI — 10% OFF</b><small>Pay the discounted total now.</small></span></label><label class="pay-option"><input type="radio" name="method" value="cod"><span><b>COD — ₹199 advance</b><small>The advance is part of your order total; the rest is due on delivery.</small></span></label></fieldset><button class="button" type="submit">CONTINUE TO PAYMENT</button></form></section><aside class="order-card"><h2>Your order</h2><div id="orderItems"></div><div id="calculation"></div></aside></main><dialog id="paymentDialog"><button class="close-dialog" onclick="paymentDialog.close()">×</button><div id="paymentContent"></div></dialog></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Checkout — Coverly</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="checkout.css">
+  <script src="config.js" defer></script>
+  <script src="google-sheets-config.js" defer></script>
+  <script src="checkout.js" defer></script>
+</head>
+<body>
+  <div class="announcement">SECURE UPI CHECKOUT · 100% SINCERE & VERIFIED ORDERS</div>
+  
+  <header class="header">
+    <a class="logo" href="index.html">COVER<i>LY</i></a>
+    <a href="index.html" class="cart-toggle">← Continue shopping</a>
+  </header>
+
+  <main class="checkout-page">
+    <section>
+      <p class="eyebrow">Checkout</p>
+      <h1>Delivery details</h1>
+      <form id="checkoutForm">
+        <fieldset>
+          <legend>CONTACT INFORMATION</legend>
+          <label>Full name *
+            <input name="name" required autocomplete="name" placeholder="Full name">
+          </label>
+          <label>Mobile number *
+            <input name="phone" required inputmode="numeric" pattern="[0-9]{10}" placeholder="10-digit mobile number" autocomplete="tel">
+          </label>
+          <label>Email
+            <input name="email" type="email" autocomplete="email" placeholder="Email address (for receipt & tracking)">
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>DELIVERY ADDRESS</legend>
+          <label>House / Flat / Building *
+            <input name="address" required autocomplete="address-line1" placeholder="Flat / House no., Building name">
+          </label>
+          <label>Area / Street *
+            <input name="area" required autocomplete="address-line2" placeholder="Street, Colony, Landmark">
+          </label>
+          <div class="two">
+            <label>City *
+              <input name="city" required autocomplete="address-level2" placeholder="City">
+            </label>
+            <label>State *
+              <input name="state" required autocomplete="address-level1" placeholder="State">
+            </label>
+          </div>
+          <label>PIN code *
+            <input name="pincode" required inputmode="numeric" pattern="[0-9]{6}" autocomplete="postal-code" placeholder="6-digit pincode">
+          </label>
+        </fieldset>
+
+        <fieldset>
+          <legend>PAYMENT METHOD</legend>
+          <label class="pay-option">
+            <input type="radio" name="method" value="prepaid" checked>
+            <span>
+              <b>Prepaid UPI — 10% OFF</b>
+              <small>Pay instantly with GPay, PhonePe, or Paytm.</small>
+            </span>
+          </label>
+          <label class="pay-option">
+            <input type="radio" name="method" value="cod">
+            <span>
+              <b>Cash on Delivery — ₹199 advance deposit</b>
+              <small>The advance is deducted from your order total; balance due on delivery.</small>
+            </span>
+          </label>
+        </fieldset>
+
+        <button class="button" type="submit">CONTINUE TO PAYMENT →</button>
+      </form>
+    </section>
+
+    <aside class="order-card">
+      <h2>Your order</h2>
+      <div id="orderItems"></div>
+      <div id="calculation"></div>
+    </aside>
+  </main>
+
+  <dialog id="paymentDialog">
+    <button class="close-dialog" onclick="paymentDialog.close()" style="position:absolute;top:16px;right:18px;background:none;border:none;font-size:24px;cursor:pointer;color:var(--ink);line-height:1">×</button>
+    <div id="paymentContent"></div>
+  </dialog>
+
+  <footer class="footer" style="background:var(--ink);color:#dfe5dd;padding:36px 20px;text-align:center;border-top:1px solid #23352c;margin-top:60px">
+    <div style="max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px">
+      <a class="logo" href="index.html" style="color:var(--lime);text-decoration:none;font-size:20px;font-weight:900;letter-spacing:-.03em">COVER<i style="font-style:normal;color:#fff">LY</i></a>
+      <p style="margin:0;font-size:13px;color:#9cb1a4;display:flex;gap:16px;flex-wrap:wrap">
+        <a href="pages/faq.html" style="color:#dfe5dd;text-decoration:none">FAQ</a>
+        <a href="pages/contact.html" style="color:#dfe5dd;text-decoration:none">Contact</a>
+        <a href="pages/shipping.html" style="color:#dfe5dd;text-decoration:none">Shipping</a>
+        <a href="pages/terms.html" style="color:#dfe5dd;text-decoration:none">Terms</a>
+        <a href="pages/privacy.html" style="color:#dfe5dd;text-decoration:none">Privacy</a>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

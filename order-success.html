@@ -108,7 +108,7 @@
 <body>
   <div class="announcement">CUSTOM PHONE CASES · 100% SATISFACTION GUARANTEED</div>
   <header class="header">
-    <a class="logo" href="index.html">COVER<span>LY</span></a>
+    <a class="logo" href="index.html">COVER<i>LY</i></a>
     <a href="index.html" class="cart-toggle">Continue shopping</a>
   </header>
 
@@ -183,10 +183,23 @@
         btn.style.background = '#2e7d32';
         setTimeout(() => {
           btn.textContent = 'Copy ID';
-          btn.style.background = '#29233f';
+          btn.style.background = 'var(--ink)';
         }, 2000);
       });
     }
   </script>
+
+  <footer class="footer" style="background:var(--ink);color:#dfe5dd;padding:36px 20px;text-align:center;border-top:1px solid #23352c;margin-top:40px">
+    <div style="max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px">
+      <a class="logo" href="index.html" style="color:var(--lime);text-decoration:none;font-size:20px;font-weight:900;letter-spacing:-.03em">COVER<i style="font-style:normal;color:#fff">LY</i></a>
+      <p style="margin:0;font-size:13px;color:#9cb1a4;display:flex;gap:16px;flex-wrap:wrap">
+        <a href="pages/faq.html" style="color:#dfe5dd;text-decoration:none">FAQ</a>
+        <a href="pages/contact.html" style="color:#dfe5dd;text-decoration:none">Contact</a>
+        <a href="pages/shipping.html" style="color:#dfe5dd;text-decoration:none">Shipping</a>
+        <a href="pages/terms.html" style="color:#dfe5dd;text-decoration:none">Terms</a>
+        <a href="pages/privacy.html" style="color:#dfe5dd;text-decoration:none">Privacy</a>
+      </p>
+    </div>
+  </footer>
 </body>
 </html>

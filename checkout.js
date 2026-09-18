@@ -71,9 +71,9 @@ function render() {
     const c = calc();
     calculation.innerHTML = `<div class="calculation">
       <p><span>Subtotal</span><b>${Rs(c.subtotal)}</b></p>
-      ${c.discount ? `<p><span>Prepaid discount</span><b>−${Rs(c.discount)}</b></p>` : ''}
-      <p><span>${c.method === 'COD' ? 'Pay now (COD advance)' : 'Amount payable now'}</span><b>${Rs(c.paid)}</b></p>
-      ${c.remaining ? `<p><span>Remaining on delivery</span><b>${Rs(c.remaining)}</b></p>` : ''}
+      ${c.discount ? `<p><span>Prepaid discount (10% OFF)</span><b>−${Rs(c.discount)}</b></p>` : ''}
+      <p><span>${c.method === 'COD' ? 'Pay now (COD advance deposit)' : 'Amount payable now'}</span><b>${Rs(c.paid)}</b></p>
+      ${c.remaining ? `<p><span>Remaining due on delivery</span><b>${Rs(c.remaining)}</b></p>` : ''}
     </div>`;
   }
 }
@@ -83,12 +83,15 @@ document.addEventListener('change', e => {
 });
 
 function generateOrderId() {
-  return 'CVR-' + (crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0].toString().slice(-6) : Math.floor(100000 + Math.random() * 900000));
+  return 'CVR-' + (crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase().slice(-6) : Math.floor(100000 + Math.random() * 900000));
 }
 
 function encodeParams(o) {
   return Object.entries(o).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
 }
+
+let activeOrderData = null;
+let chkUpiLaunched = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   render();
@@ -104,68 +107,108 @@ document.addEventListener('DOMContentLoaded', () => {
       const orderId = generateOrderId();
       const merchantId = (window.COVERLY_CONFIG && window.COVERLY_CONFIG.MERCHANT_UPI_ID) || 'paytm.s1i6534@pty';
       const merchantName = (window.COVERLY_CONFIG && window.COVERLY_CONFIG.MERCHANT_NAME) || 'Coverly';
-      const upi = encodeParams({
+      const upiParams = encodeParams({
         pa: merchantId,
         pn: merchantName,
         am: c.paid.toFixed(2),
         cu: 'INR',
         tn: orderId
       });
-      const qr = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent('upi://pay?' + upi);
+      const upiUrl = 'upi://pay?' + upiParams;
+      const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(upiUrl);
+
+      activeOrderData = {
+        orderId,
+        createdAt: new Date().toISOString(),
+        customerName: fd.get('name') || '',
+        phone: fd.get('phone') || '',
+        email: fd.get('email') || '',
+        address: `${fd.get('address') || ''}, ${fd.get('area') || ''}`.trim(),
+        city: fd.get('city') || '',
+        state: fd.get('state') || '',
+        pincode: fd.get('pincode') || '',
+        items: cart.map(x => resolveItem(x)),
+        subtotal: c.subtotal,
+        discount: c.discount,
+        total: c.method === 'COD' ? c.subtotal : c.paid,
+        paymentMethod: c.method,
+        amountPaid: c.paid,
+        amountRemaining: c.remaining,
+        utr: '',
+        paymentStatus: c.method === 'COD' ? 'Advance Verification Pending' : 'Verification Pending',
+        orderStatus: 'Order Placed'
+      };
+
+      chkUpiLaunched = false;
 
       if (paymentContent) {
-        paymentContent.innerHTML = `<div class="payment">
-          <p class="eyebrow">${c.method}</p>
-          <h2>Pay ${Rs(c.paid)}</h2>
-          <p class="notice">Scan with Google Pay, PhonePe, Paytm, BHIM or another supported UPI app. Your payment is not verified automatically.</p>
-          <img src="${qr}" alt="UPI QR code for ${Rs(c.paid)}">
-          <div class="upi-id">${merchantId}</div>
-          <div class="action-row">
-            <a class="button" href="upi://pay?${upi}">OPEN UPI APP</a>
-            <button class="button secondary" type="button" onclick="navigator.clipboard.writeText('${merchantId}')">COPY UPI ID</button>
+        paymentContent.innerHTML = `<div class="payment" style="text-align:center;padding:8px 4px">
+          <p class="eyebrow" style="margin:0 0 6px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.08em;font-size:11px">${c.method === 'COD' ? 'COD ADVANCE DEPOSIT' : 'PREPAID UPI (10% OFF)'}</p>
+          <h2 style="font-size:32px;letter-spacing:-.04em;margin:0 0 4px;color:var(--ink)">Pay ${Rs(c.paid)}</h2>
+          <div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:20px">Order ID: <b>${orderId}</b></div>
+
+          <div style="margin-bottom:14px">
+            <button type="button" class="button" id="chkUpiBtn" onclick="handleChkPayClick('${upiUrl}')" style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;padding:16px;border-radius:6px">
+              <span id="chkUpiText">Pay with UPI App (GPay / PhonePe / Paytm)</span> <span id="chkUpiArrow">→</span>
+            </button>
+            <p id="chkUpiNote" style="display:none;font-size:12px;color:var(--pine);font-weight:700;margin:12px 0 4px">
+              ✓ UPI app launched. Once payment is done, tap above to confirm your order!
+            </p>
           </div>
-          <form class="utr" id="utrForm">
-            <label>UTR / Transaction Reference Number *<input name="utr" required placeholder="Enter UTR / transaction ID"></label>
-            <button class="button" type="submit">CONFIRM PAYMENT</button>
-          </form>
+
+          <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:14px">
+            <button type="button" class="button secondary" style="font-size:12px;padding:9px 16px;width:auto;margin:0 auto 12px;border-radius:4px" onclick="toggleChkQr()">
+              <span id="chkQrLabel">Scan QR ▾</span>
+            </button>
+            <div id="chkQrBox" style="display:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:8px">
+              <img src="${qrUrl}" alt="UPI QR code" style="width:170px;height:170px;display:block;margin:0 auto 10px">
+              <div class="upi-id" style="font-size:12px;margin-bottom:12px">${merchantId}</div>
+              <button class="button" type="button" style="padding:12px 16px;font-size:13px" onclick="finalizeCheckout()">
+                I have completed payment · Confirm Order →
+              </button>
+            </div>
+          </div>
         </div>`;
       }
       if (paymentDialog && typeof paymentDialog.showModal === 'function') {
         paymentDialog.showModal();
       }
-      const utrForm = document.getElementById('utrForm');
-      if (utrForm) {
-        utrForm.addEventListener('submit', x => submitOrder(x, fd, c, orderId));
-      }
     });
   }
 });
 
-function submitOrder(e, fd, c, orderId) {
-  e.preventDefault();
-  const utrForm = document.getElementById('utrForm');
-  const utrValue = utrForm ? (new FormData(utrForm).get('utr') || '') : '';
-  const order = {
-    orderId,
-    createdAt: new Date().toISOString(),
-    customerName: fd.get('name') || '',
-    phone: fd.get('phone') || '',
-    email: fd.get('email') || '',
-    address: `${fd.get('address') || ''}, ${fd.get('area') || ''}`.trim(),
-    city: fd.get('city') || '',
-    state: fd.get('state') || '',
-    pincode: fd.get('pincode') || '',
-    items: cart.map(x => resolveItem(x)),
-    subtotal: c.subtotal,
-    discount: c.discount,
-    total: c.method === 'COD' ? c.subtotal : c.paid,
-    paymentMethod: c.method,
-    amountPaid: c.paid,
-    amountRemaining: c.remaining,
-    utr: utrValue,
-    paymentStatus: c.method === 'COD' ? 'Advance Verification Pending' : 'Verification Pending',
-    orderStatus: 'Order Placed'
-  };
+function handleChkPayClick(upiUrl) {
+  if (chkUpiLaunched) {
+    finalizeCheckout();
+    return;
+  }
+  chkUpiLaunched = true;
+  const btnText = document.getElementById('chkUpiText');
+  const btnArrow = document.getElementById('chkUpiArrow');
+  const note = document.getElementById('chkUpiNote');
+
+  if (btnText) btnText.textContent = "✓ I've completed payment — Confirm Order";
+  if (btnArrow) btnArrow.textContent = "→";
+  if (note) note.style.display = 'block';
+
+  // Open UPI app without interrupting it
+  window.location.href = upiUrl;
+}
+
+function toggleChkQr() {
+  const box = document.getElementById('chkQrBox');
+  const label = document.getElementById('chkQrLabel');
+  if (!box) return;
+  const isHidden = box.style.display === 'none';
+  box.style.display = isHidden ? 'block' : 'none';
+  if (label) {
+    label.textContent = isHidden ? 'Hide QR ▴' : 'Scan QR ▾';
+  }
+}
+
+function finalizeCheckout() {
+  if (!activeOrderData) return;
+  const order = activeOrderData;
 
   try { localStorage.setItem('coverlyLastOrder', JSON.stringify(order)); } catch(err) {}
 

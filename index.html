@@ -427,10 +427,10 @@
             </p>
           </div>
 
-          <!-- Minimalist QR Toggle for Desktop / Scanning -->
-          <div style="margin-top:18px">
+          <!-- Minimalist QR Toggle -->
+          <div style="margin-top:16px">
             <button type="button" class="qr-toggle-link" onclick="toggleQrView()">
-              <span id="qrToggleLabel">Or scan QR code with another phone ▾</span>
+              <span id="qrToggleLabel">Scan QR ▾</span>
             </button>
             <div id="qrDropBox" style="display:none;text-align:center;margin-top:12px;padding:16px;background:#fff;border:1px solid var(--line);border-radius:10px">
               <img id="premiumQr" alt="UPI payment QR code" style="width:170px;height:170px;display:block;margin:0 auto 10px">
@@ -837,7 +837,7 @@
       const isHidden = box.style.display === 'none';
       box.style.display = isHidden ? 'block' : 'none';
       if (label) {
-        label.textContent = isHidden ? 'Hide QR code ▴' : 'Or scan QR code with another phone ▾';
+        label.textContent = isHidden ? 'Hide QR ▴' : 'Scan QR ▾';
       }
     }
     window.toggleQrView = toggleQrView;
