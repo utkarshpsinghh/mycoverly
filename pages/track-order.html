@@ -29,8 +29,8 @@
       outline: none;
     }
     .track-form input:focus {
-      border-color: #9a72c5;
-      box-shadow: 0 0 0 3px #eadfff;
+      border-color: var(--pine);
+      box-shadow: 0 0 0 3px #d9ebd6;
     }
     .track-btn {
       width: 100%;
@@ -56,11 +56,12 @@
       margin-top: 36px;
     }
     .order-header-card {
-      background: #fff;
+      background: var(--paper);
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(23,38,31,0.03);
     }
     .order-header-top {
       display: flex;
@@ -97,12 +98,12 @@
       letter-spacing: .04em;
     }
     .badge-status {
-      background: #eadfff;
-      color: #5c3c88;
+      background: #e8f3e5;
+      color: #244b3b;
     }
     .badge-payment {
-      background: #e4f4dc;
-      color: #2f6920;
+      background: #f0f7ec;
+      color: #2b5e20;
     }
     .order-details-grid {
       display: grid;
@@ -122,9 +123,9 @@
       letter-spacing: .04em;
     }
     .courier-banner {
-      background: #fdf5e8;
-      border: 1px solid #f9e2b8;
-      border-radius: 10px;
+      background: #fdfaf0;
+      border: 1px solid #ebd9a7;
+      border-radius: 8px;
       padding: 16px;
       margin-top: 16px;
       display: flex;
@@ -136,10 +137,10 @@
     .courier-banner strong {
       display: block;
       font-size: 14px;
-      color: #7a4f10;
+      color: #6d4b12;
     }
     .courier-banner a {
-      background: #7a4f10;
+      background: #6d4b12;
       color: #fff !important;
       padding: 8px 16px;
       border-radius: 6px;
@@ -157,7 +158,7 @@
       position: relative;
       padding: 0 0 24px 34px;
       font-size: 13px;
-      color: #8c8599;
+      color: var(--muted);
     }
     .production-track .track-step:before {
       content: '';
@@ -167,7 +168,7 @@
       width: 12px;
       height: 12px;
       border-radius: 50%;
-      background: #e0d8ea;
+      background: #dfe5dd;
       transition: background .2s;
     }
     .production-track .track-step:after {
@@ -177,7 +178,7 @@
       top: 17px;
       width: 2px;
       height: calc(100% - 12px);
-      background: #e9e2f2;
+      background: #e6ede4;
     }
     .production-track .track-step:last-child {
       padding-bottom: 0;
@@ -190,15 +191,15 @@
       font-weight: 600;
     }
     .production-track .track-step.done:before {
-      background: #9a72c5;
+      background: var(--pine);
     }
     .production-track .track-step.active {
       color: var(--ink);
       font-weight: 800;
     }
     .production-track .track-step.active:before {
-      background: #29233f;
-      box-shadow: 0 0 0 5px #ffc9df;
+      background: var(--ink);
+      box-shadow: 0 0 0 5px #e5ff8f;
     }
     .loading-box {
       text-align: center;
@@ -209,8 +210,8 @@
     .spinner {
       width: 32px;
       height: 32px;
-      border: 3px solid #e9dfee;
-      border-top-color: #6b5a99;
+      border: 3px solid #e2ebd9;
+      border-top-color: var(--pine);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       margin: 0 auto 14px;
