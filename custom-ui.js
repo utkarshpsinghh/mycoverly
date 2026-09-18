@@ -35,7 +35,7 @@ window.addEventListener('load', () => {
     if (!box) return;
     const isHidden = box.style.display === 'none';
     box.style.display = isHidden ? 'block' : 'none';
-    if (btn) btn.textContent = isHidden ? '🔍 How to find your model ▴ (Hide guide)' : '🔍 Not sure about your exact model? View model finder guide ▾';
+    if (btn) btn.textContent = isHidden ? 'How to find your model ▴ (Hide guide)' : 'Not sure about your exact model? View model finder guide ▾';
   };
 
   window.handleOptionToggle = el => {
@@ -72,7 +72,7 @@ window.addEventListener('load', () => {
         <!-- Header with Design Info & Price -->
         <header class="builder-hero">
           <div class="builder-thumb-col">
-            ${p.image ? `<img class="builder-thumb-img" src="${p.image}" alt="${designName}">` : `<div class="builder-thumb-fallback">✦</div>`}
+            ${p.image ? `<img class="builder-thumb-img" src="${p.image}" alt="${designName}">` : `<div class="builder-thumb-fallback">Coverly</div>`}
           </div>
           <div class="builder-meta-col">
             <span class="builder-pill">${collection}</span>
@@ -117,16 +117,16 @@ window.addEventListener('load', () => {
           <!-- Model-Finder Guidance -->
           <div class="model-finder-wrap">
             <button type="button" id="modelHelpBtn" class="model-help-toggle" onclick="toggleModelGuidance()">
-              🔍 Not sure about your exact model? View model finder guide ▾
+              Not sure about your exact model? View model finder guide ▾
             </button>
             <div id="modelGuidanceBox" class="model-guidance-box" style="display:none">
               <div class="guidance-grid">
                 <div class="guidance-card">
-                  <div class="guidance-title">🍎 On iPhone</div>
+                  <div class="guidance-title">On iPhone</div>
                   <p>Open <b>Settings</b> → Tap <b>General</b> → Tap <b>About</b> → See <b>Model Name</b> (e.g. iPhone 15 Pro).</p>
                 </div>
                 <div class="guidance-card">
-                  <div class="guidance-title">📱 On Android (Samsung, OnePlus, etc.)</div>
+                  <div class="guidance-title">On Android (Samsung, OnePlus, etc.)</div>
                   <p>Open <b>Settings</b> → Scroll down to <b>About Phone</b> (or <i>About Device</i>) → Check <b>Model Name</b>.</p>
                 </div>
               </div>
@@ -144,19 +144,19 @@ window.addEventListener('load', () => {
           <div class="custom-options-grid">
             <label class="opt-pill">
               <input type="checkbox" id="optOriginal" value="Keep design exactly as shown" checked onchange="handleOptionToggle(this)">
-              <span>✦ Keep as shown</span>
+              <span>Keep as shown</span>
             </label>
             <label class="opt-pill">
               <input type="checkbox" id="optText" value="Add custom text / monogram" onchange="handleOptionToggle(this)">
-              <span>✎ Add text / name</span>
+              <span>Add text / name</span>
             </label>
             <label class="opt-pill">
               <input type="checkbox" id="optColor" value="Adjust colors or background" onchange="handleOptionToggle(this)">
-              <span>🎨 Color adjustments</span>
+              <span>Color adjustments</span>
             </label>
             <label class="opt-pill">
               <input type="checkbox" id="optNote" value="Special instructions" onchange="handleOptionToggle(this)">
-              <span>💬 Special note</span>
+              <span>Special note</span>
             </label>
           </div>
 

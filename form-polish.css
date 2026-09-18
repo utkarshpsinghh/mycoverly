@@ -503,3 +503,70 @@
     text-align: left;
   }
 }
+
+/* Catalog loading screen: match lilac/blush/ink theme */
+#catalogLoader {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  background: radial-gradient(circle at 50% 45%, #fffdfd 0%, #fff8fc 50%, #f4ecf9 100%) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 14px !important;
+  color: var(--ink, #29233f) !important;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  transition: opacity .35s ease !important;
+}
+
+.loader-badge {
+  font: 700 11px 'DM Mono', monospace !important;
+  letter-spacing: .09em !important;
+  text-transform: uppercase !important;
+  color: var(--pine, #6b5a99) !important;
+  background: rgba(107, 90, 153, 0.09) !important;
+  border: 1px solid rgba(107, 90, 153, 0.22) !important;
+  padding: 5px 14px !important;
+  border-radius: 99px !important;
+  margin-bottom: 2px !important;
+}
+
+.loader-mark {
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  letter-spacing: -1.5px !important;
+  color: var(--ink, #29233f) !important;
+  line-height: 1 !important;
+}
+
+.loader-mark i,
+.loader-mark span {
+  color: var(--lilac, #a67ec5) !important;
+  font-style: normal !important;
+}
+
+.loader-orbit {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 50% !important;
+  border: 3.5px solid #ebdfee !important;
+  border-top-color: var(--pine, #6b5a99) !important;
+  border-right-color: var(--lilac, #a67ec5) !important;
+  animation: spin .85s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite !important;
+  box-shadow: 0 0 16px rgba(166, 126, 197, 0.16) !important;
+  margin: 6px 0 !important;
+}
+
+#catalogLoader strong {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: var(--ink, #29233f) !important;
+  letter-spacing: -0.02em !important;
+}
+
+#catalogLoader small {
+  font-size: 13px !important;
+  color: var(--muted, #746c80) !important;
+  font-weight: 500 !important;
+}
