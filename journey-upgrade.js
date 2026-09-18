@@ -1,5 +1,5 @@
 /* Helpful, low-friction discovery and custom-case review features. */
-['ui-polish.css','form-polish.css'].forEach(href=>{const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href=href;document.head.append(sheet)});
+['ui-polish.css','form-polish.css'].forEach(href=>{const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href=href;document.head.append(sheet)});const catalogFlow=document.createElement('script');catalogFlow.src='load-more.js';document.head.append(catalogFlow);
 window.addEventListener('load',()=>{
   const PHONE_SUGGESTIONS={Samsung:['Galaxy A15','Galaxy S24','Galaxy S25 Ultra','Galaxy M35'],Redmi:['Redmi Note 14','Redmi Note 13','Redmi 13'],Xiaomi:['Xiaomi 14','Xiaomi 14 Civi'],POCO:['POCO X7','POCO X6','POCO M6'],Realme:['Realme 13','Realme C67'],Vivo:['Vivo Y29','Vivo Y200'],OPPO:['OPPO K12x','OPPO A58'],Motorola:['Moto G84','Moto G64'],OnePlus:['OnePlus Nord 4','OnePlus 13R'],'Google Pixel':['Pixel 9','Pixel 9a','Pixel 8a'],'Apple iPhone':['iPhone 16','iPhone 16 Pro','iPhone 15','iPhone 15 Pro']};
   const saveKey='coverlySavedDesignsV2',recentKey='coverlyRecentDesignsV2';
