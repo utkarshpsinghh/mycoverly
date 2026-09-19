@@ -72,7 +72,7 @@ window.addEventListener('load', () => {
         <!-- Header with Design Info & Price -->
         <header class="builder-hero">
           <div class="builder-thumb-col">
-            ${p.image ? `<img class="builder-thumb-img" src="${p.image}" alt="${designName}">` : `<div class="builder-thumb-fallback">Coverly</div>`}
+            ${p.image ? `<img class="builder-thumb-img" src="${p.image}" alt="${designName}" onerror="this.onerror=null;this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='grid';"><div class="builder-thumb-fallback" style="display:none">Coverly</div>` : `<div class="builder-thumb-fallback">Coverly</div>`}
           </div>
           <div class="builder-meta-col">
             <span class="builder-pill">${collection}</span>

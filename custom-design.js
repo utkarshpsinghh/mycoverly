@@ -50,7 +50,7 @@
           <button class="image design-zoom" onclick="showDesignImage(${p.id})" aria-label="Enlarge ${p.n} preview">
             <span class="pill">${p.brand}</span>
             <span class="model-compatible">All models</span>
-            ${p.image ? `<img class="cover-photo" src="${p.image}" alt="${p.n} design preview" loading="lazy">` : `<div class="photo-placeholder"><strong>${p.n}</strong><span>Design preview unavailable</span></div>`}
+            ${p.image ? `<img class="cover-photo" src="${p.image}" alt="${p.n} design preview" loading="lazy" onerror="this.onerror=null;this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='grid';"><div class="photo-placeholder" style="display:none"><strong>${p.n}</strong><span>Design preview</span></div>` : `<div class="photo-placeholder"><strong>${p.n}</strong><span>Design preview unavailable</span></div>`}
             <span class="zoom-hint">⌕</span>
           </button>
           <div class="info">

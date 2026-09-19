@@ -12,7 +12,7 @@
       lightbox.id = 'designLightbox';
       document.body.append(lightbox);
     }
-    lightbox.innerHTML = `<button aria-label="Close image" onclick="designLightbox.classList.remove('show')">×</button><div class="lightbox-card">${design.image ? `<img src="${design.image}" alt="${design.n} enlarged design preview">` : `<div class="lightbox-placeholder"><strong>${design.n}</strong><span>Design preview</span></div>`}<p>${design.n}<small>${design.brand} · Works with all models</small></p></div>`;
+    lightbox.innerHTML = `<button aria-label="Close image" onclick="designLightbox.classList.remove('show')">×</button><div class="lightbox-card">${design.image ? `<img src="${design.image}" alt="${design.n} enlarged design preview" onerror="this.onerror=null;this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='grid';"><div class="lightbox-placeholder" style="display:none"><strong>${design.n}</strong><span>Design preview</span></div>` : `<div class="lightbox-placeholder"><strong>${design.n}</strong><span>Design preview</span></div>`}<p>${design.n}<small>${design.brand} · Works with all models</small></p></div>`;
     lightbox.classList.add('show');
   };
 
@@ -28,7 +28,7 @@
         if (!thumb) return;
         const img = item.image || design.image;
         const name = item.designName || design.n || 'Custom case';
-        thumb.innerHTML = img ? `<img src="${img}" alt="${name} design preview" loading="lazy">` : `<span class="thumb-fallback">${name.slice(0, 2)}</span>`;
+        thumb.innerHTML = img ? `<img src="${img}" alt="${name} design preview" loading="lazy" onerror="this.onerror=null;this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='grid';"><span class="thumb-fallback" style="display:none">${name.slice(0, 2)}</span>` : `<span class="thumb-fallback">${name.slice(0, 2)}</span>`;
         thumb.classList.add('design-thumb');
       });
     };
@@ -48,7 +48,7 @@
         const img = item.image || design.image;
         const name = item.designName || design.n || 'Custom case';
         const price = item.unitPrice || design.p || 349;
-        productLine.insertAdjacentHTML('afterbegin', img ? `<img class="checkout-thumb design-checkout-img" src="${img}" alt="${name} design preview">` : `<span class="checkout-thumb design-thumb-fallback">${name.slice(0, 2)}</span>`);
+        productLine.insertAdjacentHTML('afterbegin', img ? `<img class="checkout-thumb design-checkout-img" src="${img}" alt="${name} design preview" onerror="this.onerror=null;this.style.display='none';if(this.nextElementSibling)this.nextElementSibling.style.display='grid';"><span class="checkout-thumb design-thumb-fallback" style="display:none">${name.slice(0, 2)}</span>` : `<span class="checkout-thumb design-thumb-fallback">${name.slice(0, 2)}</span>`);
         const text = productLine.querySelector('span:last-child');
         if (text) {
           text.firstChild.textContent = name;
