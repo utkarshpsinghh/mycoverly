@@ -20,7 +20,7 @@ window.addEventListener('load', () => {
   if (!modal) {
     modal = document.createElement('div');
     modal.id = 'customBuilder';
-    modal.style.cssText = 'display:none;position:fixed;inset:0;z-index:99;background:rgba(41,35,63,0.7);backdrop-filter:blur(12px);padding:18px;overflow:auto';
+    modal.style.cssText = 'display:none;position:fixed;inset:0;z-index:99;overflow:auto';
     document.body.append(modal);
   }
 
