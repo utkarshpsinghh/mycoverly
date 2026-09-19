@@ -1,7 +1,17 @@
 /* Catalogue loading, image handling, zoom, and checkout/cart image fixes. */
 (() => {
-  document.body.classList.add('catalog-loading');
-  document.body.insertAdjacentHTML('afterbegin', '<div id="catalogLoader" role="status" aria-live="polite"><div class="loader-badge">CUSTOM CASE STUDIO</div><div class="loader-mark">cover<i>ly</i></div><div class="loader-orbit"></div><strong>Loading fresh designs</strong><small>Getting the latest from our studio</small></div>');
+  document.body.insertAdjacentHTML('afterbegin', `
+    <div id="catalogLoader" role="status" aria-live="polite">
+      <div class="loader-inner">
+        <div class="loader-badge">CUSTOM CASE STUDIO</div>
+        <div class="loader-brand">cover<i>ly</i></div>
+        <div class="loader-track">
+          <div class="loader-bar"></div>
+        </div>
+        <span class="loader-status">Curating your studio collection...</span>
+      </div>
+    </div>
+  `);
 
   window.showDesignImage = id => {
     const design = products.find(product => product.id === id);

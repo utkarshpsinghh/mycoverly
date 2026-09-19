@@ -109,8 +109,9 @@
     const loader = document.getElementById('catalogLoader');
     if (loader) {
       loader.style.opacity = '0';
+      loader.style.transform = 'scale(1.02)';
       loader.style.pointerEvents = 'none';
-      setTimeout(() => loader.remove(), 350);
+      setTimeout(() => loader.remove(), 450);
     }
   }
 
