@@ -1,2 +1,51 @@
-/* Progressive loading replaces numbered pagination. */
-.load-more-flow{max-width:1080px;margin:30px auto 0;padding:18px;display:flex;align-items:center;justify-content:center;gap:18px;border:1px solid #e7ddeb;border-radius:16px;background:linear-gradient(110deg,#fffaff,#f8f2ff);color:#70657e;font-size:12px}.load-more-flow b{color:#322a47}.load-more-flow button{border:0;border-radius:99px;padding:12px 17px;background:#302944;color:#fff;font:800 12px Manrope;box-shadow:0 7px 16px rgba(70,51,105,.16);transition:transform .2s,box-shadow .2s}.load-more-flow button:hover{transform:translateY(-2px);box-shadow:0 11px 22px rgba(70,51,105,.24)}.load-more-flow button i{font-style:normal;color:#ffdd7a;margin-left:5px}.load-more-flow small{color:#8d809a;font-weight:700}@media(max-width:700px){.load-more-flow{margin-top:22px;flex-direction:column;gap:10px;text-align:center;border-radius:14px}.load-more-flow button{width:100%;padding:13px}}
+/* Infinite auto-loading indicators matching lilac/blush/ink theme */
+.load-more-flow {
+  max-width: 1080px;
+  margin: 32px auto 40px;
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 99px;
+  background: linear-gradient(135deg, #fffafd 0%, #f6effa 100%);
+  border: 1px solid #ebdfee;
+  color: #645a73;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(41, 35, 63, 0.03);
+}
+
+.auto-load-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted, #746c80);
+}
+
+.auto-load-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #ebdfee;
+  border-top-color: var(--pine, #6b5a99);
+  animation: spin .75s linear infinite;
+  flex: none;
+}
+
+.auto-load-finished {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b5a99;
+}
+
+.auto-load-finished b {
+  color: var(--ink, #29233f);
+}
+
+@media (max-width: 700px) {
+  .load-more-flow {
+    margin: 24px 16px 36px;
+    padding: 12px 18px;
+    font-size: 12px;
+  }
+}
