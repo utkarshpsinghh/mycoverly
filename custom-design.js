@@ -16,6 +16,7 @@
     booted = true;
     const designs = window.COVERLY_DESIGNS || [];
     products.splice(0);
+    const localImages = window.COVERLY_LOCAL_IMAGES || {};
     designs.forEach((design, i) => products.push({
       id: i + 1,
       designId: design.id,
@@ -31,7 +32,7 @@
       colour: 'Custom print',
       colours: ['Custom print'],
       tag: design.collection,
-      image: design.image,
+      image: localImages[design.id] || design.image,
       description: design.description,
       tags: design.tags || []
     }));
