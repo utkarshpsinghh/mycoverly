@@ -10,20 +10,27 @@ try { localStorage.setItem('coverlyCart', JSON.stringify(cart)); } catch(e) {}
 let products = window.products || [];
 const Rs = x => '₹' + Math.round(Number(x) || 0).toLocaleString('en-IN');
 
+function sanitizeInput(val, maxLen) {
+  if (typeof val !== 'string') return '';
+  return val.replace(/<[^>]*>/g, '').replace(/[\x00-\x1F\x7F]/g, '').trim().slice(0, maxLen || 250);
+}
+
 function resolveItem(x) {
   const p = (products && products.length)
     ? (products.find(prod => (x.designId && (prod.designId === x.designId || String(prod.id) === String(x.designId))) || String(prod.id) === String(x.id) || prod.id === x.id) || {})
     : {};
-  const name = x.designName || p.n || p.name || 'Custom Phone Case';
-  const brand = x.phoneBrand || p.brand || 'Coverly';
-  const model = x.phoneModel ? `${x.phoneBrand ? x.phoneBrand + ' ' : ''}${x.phoneModel}`.trim() : (p.model || 'Custom Case');
-  const price = Number(x.unitPrice || x.price || p.p || p.price || 349);
+  const name = sanitizeInput(x.designName || p.n || p.name || 'Custom Phone Case', 100);
+  const brand = sanitizeInput(x.phoneBrand || p.brand || 'Coverly', 60);
+  const model = sanitizeInput(x.phoneModel ? `${x.phoneBrand ? x.phoneBrand + ' ' : ''}${x.phoneModel}`.trim() : (p.model || 'Custom Case'), 60);
+  let price = Number(x.unitPrice || x.price || p.p || p.price || 349);
+  if (isNaN(price) || price < 299) price = 349;
   const image = x.image || p.image || '';
-  const type = x.customizationType || x.type || p.type || 'Standard Matte';
+  const type = sanitizeInput(x.customizationType || x.type || p.type || 'Standard Matte', 60);
+  const quantity = Math.max(1, Math.min(20, parseInt(x.q, 10) || 1));
 
   return {
-    id: x.designId || x.id || p.id || 'CVR-CUSTOM',
-    designId: x.designId || x.id || p.designId || 'CVR-CUSTOM',
+    id: sanitizeInput(x.designId || x.id || p.id || 'CVR-CUSTOM', 50),
+    designId: sanitizeInput(x.designId || x.id || p.designId || 'CVR-CUSTOM', 50),
     name,
     designName: name,
     brand,
@@ -31,7 +38,7 @@ function resolveItem(x) {
     price,
     type,
     image,
-    quantity: Number(x.q) || 1
+    quantity
   };
 }
 
@@ -117,16 +124,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const upiUrl = 'upi://pay?' + upiParams;
       const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(upiUrl);
 
+      const rawPhone = String(fd.get('phone') || '').replace(/\D/g, '').slice(0, 10);
+      const rawPin = String(fd.get('pincode') || '').replace(/\D/g, '').slice(0, 6);
+      const fullAddress = `${fd.get('address') || ''}, ${fd.get('area') || ''}`.trim();
+
       activeOrderData = {
         orderId,
         createdAt: new Date().toISOString(),
-        customerName: fd.get('name') || '',
-        phone: fd.get('phone') || '',
-        email: fd.get('email') || '',
-        address: `${fd.get('address') || ''}, ${fd.get('area') || ''}`.trim(),
-        city: fd.get('city') || '',
-        state: fd.get('state') || '',
-        pincode: fd.get('pincode') || '',
+        customerName: sanitizeInput(String(fd.get('name') || ''), 100),
+        phone: rawPhone,
+        email: sanitizeInput(String(fd.get('email') || ''), 120),
+        address: sanitizeInput(fullAddress, 250),
+        city: sanitizeInput(String(fd.get('city') || ''), 80),
+        state: sanitizeInput(String(fd.get('state') || ''), 80),
+        pincode: rawPin,
         items: cart.map(x => resolveItem(x)),
         subtotal: c.subtotal,
         discount: c.discount,
