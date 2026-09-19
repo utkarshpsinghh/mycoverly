@@ -13,14 +13,23 @@
     body{margin:0;background:var(--cream);color:var(--ink);font-family:Manrope,Arial,sans-serif}
     button,input,select{font:inherit}
     button{cursor:pointer;border:0}
-    .bar{background:var(--ink);color:#f5eff9;font:500 11px 'DM Mono';letter-spacing:.08em;text-align:center;padding:10px}
+    .bar{background:var(--ink);color:#f5eff9;font:500 11px 'DM Mono';letter-spacing:.08em;padding:9px max(18px,5vw);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+    .bar-policy-links{display:inline-flex;align-items:center;gap:8px;font-size:11px}
+    .bar-policy-links a{color:var(--lime);text-decoration:underline;text-underline-offset:2px;font-weight:700}
+    .bar-policy-links a:hover{color:#fff}
+    .bar-dot{color:var(--lilac)}
     .nav{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 max(24px,5vw);background:#ffffff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
     .logo{font-size:25px;font-weight:800;letter-spacing:-1.5px;color:var(--ink)}
     .logo i{color:var(--lilac);font-style:normal}
-    .links{display:flex;gap:26px;align-items:center}
+    .links{display:flex;gap:22px;align-items:center}
     .links a{font-size:13px;font-weight:700;text-decoration:none;color:var(--ink)}
+    .links a:hover{color:var(--pine)}
+    .nav-right-actions{display:flex;align-items:center;gap:14px}
+    .nav-mobile-privacy{display:none;font-size:12px;font-weight:700;color:var(--pine);text-decoration:underline;text-underline-offset:2px}
     .cart-btn{background:var(--ink);color:white;border-radius:30px;padding:11px 16px;font-size:13px;font-weight:700}
     .cart-btn span{background:var(--lime);color:var(--ink);display:inline-grid;place-items:center;border-radius:50%;width:18px;height:18px;font-size:10px;margin-left:6px;font-weight:700}
+    .cart-drawer-policies{text-align:center;margin-top:14px;font-size:11px;color:var(--muted);display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+    .cart-drawer-policies a{color:var(--pine);text-decoration:underline;text-underline-offset:2px}
     .hero{min-height:500px;background:#f5ebfa;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
     .hero-copy{padding:86px max(24px,10vw);background:#f5ebfa}
     .eyebrow{font:500 11px 'DM Mono';letter-spacing:.08em;color:var(--pine);text-transform:uppercase}
@@ -145,10 +154,12 @@
 
     @media(max-width:760px){
       body{overflow-x:hidden}
-      .bar{padding:8px 14px;font-size:9px}
+      .bar{padding:7px 12px;font-size:9.5px;justify-content:center;text-align:center;gap:4px}
+      .bar-policy-links{font-size:9.5px;gap:6px}
       .nav{height:64px;padding:0 16px}
       .logo{font-size:24px}
       .links{display:none}
+      .nav-mobile-privacy{display:inline-block}
       .cart-btn{padding:10px 13px;font-size:12px}
       .hero{grid-template-columns:1fr}
       .hero-copy{padding:42px 20px 36px}
@@ -273,15 +284,30 @@
   </script>
 </head>
 <body>
-  <div class="bar">LIMITED LAUNCH PRICING ON SELECTED COLOURS &nbsp; • &nbsp; COMPLIMENTARY DELIVERY</div>
+  <div class="bar">
+    <span>LIMITED LAUNCH PRICING ON SELECTED COLOURS &nbsp; • &nbsp; COMPLIMENTARY DELIVERY</span>
+    <span class="bar-policy-links">
+      <a href="pages/track-order.html">Track Order</a>
+      <span class="bar-dot">·</span>
+      <a href="pages/privacy.html">Privacy Policy</a>
+      <span class="bar-dot">·</span>
+      <a href="pages/terms.html">Terms</a>
+    </span>
+  </div>
   <nav class="nav">
     <div class="logo">cover<i>ly</i></div>
     <div class="links">
       <a href="#shop">Explore designs</a>
       <a href="#models">Collections</a>
       <a href="#why">Our promise</a>
+      <a href="pages/track-order.html">Track order</a>
+      <a href="pages/privacy.html">Privacy</a>
+      <a href="pages/contact.html">Help</a>
     </div>
-    <button class="cart-btn" onclick="toggleCart()">Bag <span id="cartCount">0</span></button>
+    <div class="nav-right-actions">
+      <a href="pages/privacy.html" class="nav-mobile-privacy">Privacy</a>
+      <button class="cart-btn" onclick="toggleCart()">Bag <span id="cartCount">0</span></button>
+    </div>
   </nav>
 
   <main>
@@ -383,7 +409,7 @@
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="footer" id="footer">
     <div class="logo">cover<i>ly</i></div>
     <p>Good-looking protection for every phone. Designed in India, delivered with care.</p>
     <p>
@@ -494,6 +520,12 @@
       <div><span>Delivery</span><span id="delivery">Free</span></div>
       <div style="font-size:16px;margin-top:16px"><b>Total</b><b id="total">₹0</b></div>
       <button class="checkout" onclick="openCheckout()">Proceed to checkout →</button>
+      <div class="cart-drawer-policies">
+        <a href="pages/privacy.html">Privacy</a> · 
+        <a href="pages/terms.html">Terms</a> · 
+        <a href="pages/returns-refunds.html">Returns</a> · 
+        <a href="pages/track-order.html">Track</a>
+      </div>
     </div>
   </aside>
 
