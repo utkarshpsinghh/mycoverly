@@ -13,11 +13,7 @@
     body{margin:0;background:var(--cream);color:var(--ink);font-family:Manrope,Arial,sans-serif}
     button,input,select{font:inherit}
     button{cursor:pointer;border:0}
-    .bar{background:var(--ink);color:#f5eff9;font:500 11px 'DM Mono';letter-spacing:.08em;padding:9px max(18px,5vw);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-    .bar-policy-links{display:inline-flex;align-items:center;gap:8px;font-size:11px}
-    .bar-policy-links a{color:var(--lime);text-decoration:underline;text-underline-offset:2px;font-weight:700}
-    .bar-policy-links a:hover{color:#fff}
-    .bar-dot{color:var(--lilac)}
+    .bar{background:var(--ink);color:#f5eff9;font:500 11px 'DM Mono';letter-spacing:.08em;text-align:center;padding:10px}
     .nav{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 max(24px,5vw);background:#ffffff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
     .logo{font-size:25px;font-weight:800;letter-spacing:-1.5px;color:var(--ink)}
     .logo i{color:var(--lilac);font-style:normal}
@@ -167,12 +163,11 @@
 
     @media(max-width:760px){
       body{overflow-x:hidden}
-      .bar{padding:7px 12px;font-size:9.5px;justify-content:center;text-align:center;gap:4px}
-      .bar-policy-links{font-size:9.5px;gap:6px}
+      .bar{padding:8px 14px;font-size:9px}
       .nav{height:64px;padding:0 16px}
       .logo{font-size:24px}
       .links{display:none}
-      .nav-mobile-privacy{display:inline-block}
+      .nav-policy-btn{padding:7px 11px;font-size:11.5px}
       .cart-btn{padding:10px 13px;font-size:12px}
       .hero{grid-template-columns:1fr}
       .hero-copy{padding:42px 20px 36px}
@@ -297,18 +292,7 @@
   </script>
 </head>
 <body>
-  <div class="bar">
-    <span>LIMITED LAUNCH PRICING ON SELECTED COLOURS &nbsp; • &nbsp; COMPLIMENTARY DELIVERY</span>
-    <span class="bar-policy-links">
-      <a href="pages/track-order.html">Track Order</a>
-      <span class="bar-dot">·</span>
-      <a href="pages/privacy.html">Privacy</a>
-      <span class="bar-dot">·</span>
-      <a href="pages/terms.html">Terms</a>
-      <span class="bar-dot">·</span>
-      <a href="javascript:void(0)" onclick="togglePoliciesModal(true)">All Policies ▾</a>
-    </span>
-  </div>
+  <div class="bar">LIMITED LAUNCH PRICING ON SELECTED COLOURS &nbsp; • &nbsp; COMPLIMENTARY DELIVERY</div>
   <nav class="nav">
     <div class="logo">cover<i>ly</i></div>
     <div class="links">
@@ -316,7 +300,6 @@
       <a href="#models">Collections</a>
       <a href="#why">Our promise</a>
       <a href="pages/track-order.html">Track order</a>
-      <a href="pages/privacy.html">Privacy</a>
     </div>
     <div class="nav-right-actions">
       <button type="button" class="nav-policy-btn" onclick="togglePoliciesModal(true)" aria-label="Open Store Policies">
