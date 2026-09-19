@@ -30,6 +30,19 @@
     .cart-btn span{background:var(--lime);color:var(--ink);display:inline-grid;place-items:center;border-radius:50%;width:18px;height:18px;font-size:10px;margin-left:6px;font-weight:700}
     .cart-drawer-policies{text-align:center;margin-top:14px;font-size:11px;color:var(--muted);display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
     .cart-drawer-policies a{color:var(--pine);text-decoration:underline;text-underline-offset:2px}
+    .nav-policy-btn{background:#f5edf9;color:var(--pine);border:1px solid #e7d6ed;border-radius:30px;padding:8px 14px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;cursor:pointer;transition:all .2s}
+    .nav-policy-btn:hover{background:var(--pine);color:#fff;border-color:var(--pine)}
+    .policies-dialog{max-width:540px;width:100%;padding:28px 24px;border-radius:14px;background:#fff;position:relative;box-shadow:0 20px 60px rgba(41,35,63,0.25)}
+    .policies-dialog .close{position:absolute;right:18px;top:16px;font-size:24px;background:none;border:none;cursor:pointer;color:var(--ink)}
+    .policies-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+    .policy-card-link{display:flex;flex-direction:column;padding:12px 14px;background:#fbf8fd;border:1px solid #ebdfee;border-radius:10px;text-decoration:none;color:var(--ink);text-align:left;transition:all .2s}
+    .policy-card-link:hover{background:#fff;border-color:var(--pine);transform:translateY(-2px);box-shadow:0 6px 16px rgba(107,90,153,0.12)}
+    .policy-card-link b{font-size:12.5px;color:var(--ink);margin-bottom:3px}
+    .policy-card-link span{font-size:11px;color:var(--muted);line-height:1.35}
+    @media(max-width:600px){
+      .policies-menu-grid{grid-template-columns:1fr;gap:8px;max-height:60vh;overflow-y:auto}
+      .policies-dialog{padding:22px 18px}
+    }
     .hero{min-height:500px;background:#f5ebfa;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
     .hero-copy{padding:86px max(24px,10vw);background:#f5ebfa}
     .eyebrow{font:500 11px 'DM Mono';letter-spacing:.08em;color:var(--pine);text-transform:uppercase}
@@ -289,9 +302,11 @@
     <span class="bar-policy-links">
       <a href="pages/track-order.html">Track Order</a>
       <span class="bar-dot">·</span>
-      <a href="pages/privacy.html">Privacy Policy</a>
+      <a href="pages/privacy.html">Privacy</a>
       <span class="bar-dot">·</span>
       <a href="pages/terms.html">Terms</a>
+      <span class="bar-dot">·</span>
+      <a href="javascript:void(0)" onclick="togglePoliciesModal(true)">All Policies ▾</a>
     </span>
   </div>
   <nav class="nav">
@@ -302,10 +317,11 @@
       <a href="#why">Our promise</a>
       <a href="pages/track-order.html">Track order</a>
       <a href="pages/privacy.html">Privacy</a>
-      <a href="pages/contact.html">Help</a>
     </div>
     <div class="nav-right-actions">
-      <a href="pages/privacy.html" class="nav-mobile-privacy">Privacy</a>
+      <button type="button" class="nav-policy-btn" onclick="togglePoliciesModal(true)" aria-label="Open Store Policies">
+        <span>Policies</span> <span style="font-size:10px">▾</span>
+      </button>
       <button class="cart-btn" onclick="toggleCart()">Bag <span id="cartCount">0</span></button>
     </div>
   </nav>
@@ -528,6 +544,51 @@
       </div>
     </div>
   </aside>
+
+  <!-- Store Policies & Information Modal -->
+  <div class="modal" id="storePoliciesModal" onclick="if(event.target===this)togglePoliciesModal(false)">
+    <div class="dialog policies-dialog">
+      <button type="button" class="close" onclick="togglePoliciesModal(false)" aria-label="Close policies modal">×</button>
+      <div class="eyebrow" style="margin-bottom:6px;text-align:left">COVERLY STORE INFORMATION</div>
+      <h2 style="font-size:24px;margin:0 0 10px;color:var(--ink);letter-spacing:-0.04em;text-align:left">Policies & Support</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.55;text-align:left">Access all official customer policies, shipping terms, returns, and order tracking anytime.</p>
+      
+      <div class="policies-menu-grid">
+        <a href="pages/privacy.html" class="policy-card-link">
+          <b>🔒 Privacy Policy</b>
+          <span>Customer data security & privacy</span>
+        </a>
+        <a href="pages/terms.html" class="policy-card-link">
+          <b>📄 Terms & Conditions</b>
+          <span>Store rules, warranty & pricing</span>
+        </a>
+        <a href="pages/shipping.html" class="policy-card-link">
+          <b>🚚 Shipping & Delivery</b>
+          <span>Free express dispatch across India</span>
+        </a>
+        <a href="pages/returns-refunds.html" class="policy-card-link">
+          <b>🔄 Returns & Refunds</b>
+          <span>Simple replacement & return terms</span>
+        </a>
+        <a href="pages/cancellation.html" class="policy-card-link">
+          <b>❌ Cancellation Policy</b>
+          <span>Production cancellation terms</span>
+        </a>
+        <a href="pages/track-order.html" class="policy-card-link">
+          <b>📍 Track Order</b>
+          <span>Check your live order status</span>
+        </a>
+        <a href="pages/about.html" class="policy-card-link">
+          <b>✨ About Coverly</b>
+          <span>Our materials & craftsmanship</span>
+        </a>
+        <a href="pages/contact.html" class="policy-card-link">
+          <b>💬 Contact Customer Care</b>
+          <span>Support helpline & email</span>
+        </a>
+      </div>
+    </div>
+  </div>
 
   <!-- Legacy Dialog Fallbacks (Retained for DOM Query Safety) -->
   <div class="modal" id="checkoutModal" style="display:none"></div>
@@ -910,7 +971,13 @@
         label.textContent = isHidden ? 'Hide QR ▴' : 'Scan QR ▾';
       }
     }
-    window.toggleQrView = toggleQrView;
+    function togglePoliciesModal(open) {
+      const modal = document.getElementById('storePoliciesModal');
+      if (!modal) return;
+      if (open) modal.classList.add('show');
+      else modal.classList.remove('show');
+    }
+    window.togglePoliciesModal = togglePoliciesModal;
 
     function premiumToPayment() {
       const name = document.getElementById('pName')?.value.trim() || '';

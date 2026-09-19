@@ -1,4 +1,4 @@
-/* Smart auto-loading with footer-trap prevention for Coverly designs catalog. */
+/* Infinite automatic loading for Coverly designs catalog. */
 (() => {
   const style = document.createElement('link');
   style.rel = 'stylesheet';
@@ -7,7 +7,6 @@
 
   const install = () => {
     const PAGE_SIZE = 16;
-    const AUTO_LOAD_LIMIT = 32; // Smoothly auto-load first 32 designs, then give user easy access to footer & load button
     let visible = PAGE_SIZE;
     let observer = null;
     let isLoading = false;
@@ -62,55 +61,30 @@
       const remaining = Math.max(0, cards.length - shown);
 
       if (remaining > 0) {
-        // If we haven't reached the auto-load limit, auto-load on scroll
-        if (visible < AUTO_LOAD_LIMIT) {
-          control.innerHTML = `
-            <div class="auto-load-container">
-              <div class="auto-load-indicator">
-                <span class="auto-load-spinner"></span>
-                <span>Auto-loading designs... (<b>${shown}</b> of <b>${cards.length}</b>)</span>
-              </div>
-              <div class="quick-policy-bar">
-                <span>Store links:</span>
-                <a href="pages/privacy.html">Privacy Policy</a>
-                <span class="policy-dot">·</span>
-                <a href="pages/terms.html">Terms</a>
-                <span class="policy-dot">·</span>
-                <a href="pages/returns-refunds.html">Returns & Refunds</a>
-                <span class="policy-dot">·</span>
-                <a href="pages/shipping.html">Shipping</a>
-                <span class="policy-dot">·</span>
-                <a href="pages/track-order.html">Track Order</a>
-              </div>
+        control.innerHTML = `
+          <div class="auto-load-container">
+            <div class="auto-load-indicator">
+              <span class="auto-load-spinner"></span>
+              <span>Auto-loading designs... (<b>${shown}</b> of <b>${cards.length}</b>)</span>
             </div>
-          `;
-        } else {
-          // Beyond AUTO_LOAD_LIMIT, show a luxury "Load More" button so user can freely reach the footer
-          control.innerHTML = `
-            <div class="manual-load-box">
-              <button type="button" class="load-more-action-btn" onclick="coverlyLoadMoreBatch()">
-                <span>Load More Designs (${remaining} remaining)</span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-              </button>
-              <div class="quick-policy-bar">
-                <span>Looking for store policies?</span>
-                <a href="pages/privacy.html">Privacy Policy</a>
-                <span class="policy-dot">·</span>
-                <a href="pages/terms.html">Terms</a>
-                <span class="policy-dot">·</span>
-                <a href="pages/returns-refunds.html">Returns & Refunds</a>
-                <span class="policy-dot">·</span>
-                <a href="pages/shipping.html">Shipping</a>
-                <span class="policy-dot">·</span>
-                <a href="pages/track-order.html">Track Order</a>
-              </div>
+            <div class="quick-policy-bar">
+              <span>Store info:</span>
+              <a href="pages/privacy.html">Privacy</a>
+              <span class="policy-dot">·</span>
+              <a href="pages/terms.html">Terms</a>
+              <span class="policy-dot">·</span>
+              <a href="pages/returns-refunds.html">Returns</a>
+              <span class="policy-dot">·</span>
+              <a href="pages/shipping.html">Shipping</a>
+              <span class="policy-dot">·</span>
+              <a href="pages/track-order.html">Track Order</a>
             </div>
-          `;
-        }
+          </div>
+        `;
       } else {
         control.innerHTML = `
           <div class="auto-load-finished-box">
-            <span class="finished-badge">✓ All ${cards.length} designs shown</span>
+            <span class="finished-badge">✓ All ${cards.length} designs loaded · You’ve seen every vibe</span>
             <div class="quick-policy-bar">
               <a href="pages/privacy.html">Privacy Policy</a>
               <span class="policy-dot">·</span>
@@ -130,21 +104,33 @@
         productGrid.parentElement.append(control);
       }
 
-      // Re-observe sentinel only while under the auto-load threshold
+      // Re-observe sentinel for 100% automatic scroll loading
       if (observer) observer.disconnect();
-      if (remaining > 0 && visible < AUTO_LOAD_LIMIT && window.IntersectionObserver) {
+      if (remaining > 0 && window.IntersectionObserver) {
         observer = new IntersectionObserver((entries) => {
           if (entries[0].isIntersecting) {
             loadNextBatch();
           }
         }, {
           root: null,
-          rootMargin: '150px 0px',
+          rootMargin: '350px 0px',
           threshold: 0.01
         });
         observer.observe(control);
       }
     };
+
+    // Backup scroll listener
+    let scrollThrottle = 0;
+    window.addEventListener('scroll', () => {
+      const now = Date.now();
+      if (now - scrollThrottle < 200) return;
+      scrollThrottle = now;
+      const control = document.getElementById('coverlyLoadMore');
+      if (control && control.getBoundingClientRect().top < window.innerHeight + 350) {
+        loadNextBatch();
+      }
+    }, { passive: true });
 
     const baseRender = window.renderProducts;
     if (!baseRender || baseRender.__coverlyAutoScroll) return;
